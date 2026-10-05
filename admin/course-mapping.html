@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Courses</title>
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+
+<body>
+    <input type="checkbox" id="menu">
+
+    <div class="sidebar">
+        <h2>SkillHub</h2>
+        <ul>
+            <li><a href="dashboard.html">🏠 Dashboard</a></li>
+            <li><a href="users.html">👥 Users</a></li>
+            <li ><a href="courses.html">🛡️ Course</a></li>
+            <li class="active"><a href="course-mapping.html">🔗 Course Mapping</a></li>
+            <li><a href="profile.html">👤 My Profile</a></li>
+            <li><a href="settings.html">⚙️ Settings</a></li>
+        </ul>
+        <div style="padding: 20px;">
+            <a href="" style="color: #ff9999;">🚪 Logout</a>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="top_bar">
+            <label for="menu" class="hamburger">☰</label>
+            <h2 style="margin-left: 20px;">Courses</h2>
+            <div id="topbarmenu">
+                <a href="users.html" id="a1">Invite Users</a>
+                <a href="#" id="a2">Create Course</a>
+                <a href="courses.html" id="a4">Create Assessment</a>
+                <div class="right_icons">
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+                <a href="profile.html" id="a3">My Profile</a>
+            </div>
+        </div>
+
+    <div class="mapping-container">
+
+    <h2>Assign Course to Student</h2>
+
+    <div class="mapping-form">
+
+        <div class="form-group">
+            <label>Select Student</label>
+
+            <select id="studentSelect">
+                <option value="">Select Student</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Select Course</label>
+
+            <select id="courseSelect">
+                <option value="">Select Course</option>
+            </select>
+        </div>
+
+        <button id="assignCourseBtn">
+            Assign Course
+        </button>
+
+    </div>
+
+            <h2>Course Assignments</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Email</th>
+                        <th>Course</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="mappingTableBody">
+                </tbody>
+            </table>
+
+        </div>
+    <script src="../js/auth.js"></script>
+    <script src="course-mapping.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Courses</title>
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+
+<body>
+    <input type="checkbox" id="menu">
+
+    <div class="sidebar">
+        <h2>SkillHub</h2>
+        <ul>
+            <li><a href="dashboard.html">🏠 Dashboard</a></li>
+            <li><a href="users.html">👥 Users</a></li>
+            <li class="active"><a href="courses.html">🛡️ Course</a></li>
+            <li><a href="course-mapping.html">🔗 Course Mapping</a></li>
+            <li><a href="profile.html">👤 My Profile</a></li>
+            <li><a href="settings.html">⚙️ Settings</a></li>
+        </ul>
+        <div style="padding: 20px;">
+            <a href="" style="color: #ff9999;">🚪 Logout</a>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="top_bar">
+            <label for="menu" class="hamburger">☰</label>
+            <h2 style="margin-left: 20px;">Courses</h2>
+            <div id="topbarmenu">
+                <a href="users.html" id="a1">Invite Users</a>
+                <a href="#" id="a2">Create Course</a>
+
+                <div class="right_icons">
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+                <a href="profile.html" id="a3">My Profile</a>
+            </div>
+        </div>
+
+<div class="tabs">
+    <a href="#" class="tab active" data-tab="all">All</a>
+    <a href="#" class="tab" data-tab="course">Courses</a>
+
+</div>
+        <div id="courseModal" class="modal">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h2 id="courseModalTitle">Create New Course</h2>
+                    <span id="closeModal">&times;</span>
+                </div>
+
+                <div class="modal-body">
+
+                    <label>Course Title</label>
+                    <input type="text" id="courseTitle">
+
+                    <label>Category</label>
+                    <select id="courseCategory">
+                        <option>Web Development</option>
+                        <option>Python</option>
+                        <option>UI / UX</option>
+                        <option>Computer Basics</option>
+                    </select>
+
+                    <label>Instructor</label>
+                        <select id="courseInstructor">
+                            <option value="">Select Instructor</option>
+                        </select>
+
+                    <label>Thumbnail</label>
+                    <input type="file" id="courseThumbnail" accept="image/*">
+
+                    <label>Description</label>
+                    <textarea id="courseDescription"></textarea>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button id="cancelBtn">Cancel</button>
+                    <button id="nextBtn">Add Modules →</button>
+                </div>
+
+            </div>
+
+        </div>
+<div id="moduleModal" class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h2>Module Builder</h2>
+            <span id="closeModule">&times;</span>
+        </div>
+
+        <div class="modal-body">
+
+            <h3 id="moduleHeading">Module 1</h3>
+
+            <label>Module Title</label>
+            <input type="text" id="moduleTitle" placeholder="HTML Basics">
+
+            <label>Video Title</label>
+            <input type="text" id="videoTitle" placeholder="Introduction to HTML">
+
+            <label>Video URL</label>
+            <input type="text" id="videoUrl" placeholder="Paste YouTube URL">
+
+            <label>Blog / Explanation</label>
+            <textarea id="blogText" placeholder="Explain this module..."></textarea>
+
+            <h3 style="margin-top:10px;">Quiz Section</h3>
+
+            <div class="quiz-card">
+
+                <h4>Quiz 1</h4>
+
+                <input type="text" id="q1" placeholder="Enter Question">
+
+                <div class="quiz-option">
+                    <input type="radio" name="q1answer" value="A">
+                    <input type="text" id="q1a" placeholder="Option A">
+                </div>
+
+                <div class="quiz-option">
+                    <input type="radio" name="q1answer" value="B">
+                    <input type="text" id="q1b" placeholder="Option B">
+                </div>
+
+                <div class="quiz-option">
+                    <input type="radio" name="q1answer" value="C">
+                    <input type="text" id="q1c" placeholder="Option C">
+                </div>
+
+            </div>
+
+
+            <div class="quiz-card">
+
+                <h4>Quiz 2</h4>
+
+                <input type="text" id="q2" placeholder="Enter Question">
+
+                <div class="quiz-option">
+                    <input type="radio" name="q2answer" value="A">
+                    <input type="text" id="q2a" placeholder="Option A">
+                </div>
+
+                <div class="quiz-option">
+                    <input type="radio" name="q2answer" value="B">
+                    <input type="text" id="q2b" placeholder="Option B">
+                </div>
+
+                <div class="quiz-option">
+                    <input type="radio" name="q2answer" value="C">
+                    <input type="text" id="q2c" placeholder="Option C">
+                </div>
+
+            </div>
+
+            <div class="quiz-card">
+
+                <h4>Quiz 3</h4>
+
+                <input type="text" id="q3" placeholder="Enter Question">
+
+                <div class="quiz-option">
+                    <input type="radio" name="q3answer" value="A">
+                    <input type="text" id="q3a" placeholder="Option A">
+                </div>
+
+                <div class="quiz-option">
+                    <input type="radio" name="q3answer" value="B">
+                    <input type="text" id="q3b" placeholder="Option B">
+                </div>
+
+                <div class="quiz-option">
+                    <input type="radio" name="q3answer" value="C">
+                    <input type="text" id="q3c" placeholder="Option C">
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="modal-footer">
+            <button id="saveModule">Save Module</button>
+            <button id="addAnother">+ Next Module</button>
+            <button id="publishCourse">Publish Course</button>
+        </div>
+
+    </div>
+
+</div>
+
+
+        <div id="body3" style="display: flex; margin-left: 10px; margin-top: 20px;">          
+        </div>
+    </div>
+    <div id="viewCourseModal" class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h2 id="viewCourseTitle">Course Details</h2>
+            <span id="closeViewCourse">&times;</span>
+        </div>
+
+        <div class="modal-body">
+
+            <div class="view-course-info">
+                <p>
+                    <strong>Category:</strong>
+                    <span id="viewCourseCategory"></span>
+                </p>
+
+                <p>
+                    <strong>Instructor:</strong>
+                    <span id="viewCourseInstructor"></span>
+                </p>
+
+                <p>
+                    <strong>Description:</strong>
+                    <span id="viewCourseDescription"></span>
+                </p>
+            </div>
+
+            <h3>Course Modules</h3>
+
+            <div id="viewCourseModules"></div>
+                    <div class="view-course-actions">
+        <button id="editCourseBtn" class="edit-course-btn">
+            Edit Course
+        </button>
+    </div>
+        </div>
+
+
+    </div>
+
+</div>
+
+    <script src="../js/auth.js"></script>
+    <script src="courses.js"></script>
+</body>
+
+</html >

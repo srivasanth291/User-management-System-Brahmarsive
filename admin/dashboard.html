@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body>
+<input type="checkbox" id="menu">
+
+<div class="sidebar">
+    <h2>SkillHub</h2>
+    <ul>
+        <li class="active"><a href="dashboard.html">🏠 Dashboard</a></li>
+        <li><a href="users.html">👥 Users</a></li>
+        
+        <li><a href="course-mapping.html">🔗 Course Mapping</a></li>
+        <li><a href="courses.html">🛡️ Course</a></li>
+        <li><a href="profile.html">👤 My Profile</a></li>
+        <li><a href="settings.html">⚙️ Settings</a></li>
+    </ul>
+    <div style="padding: 20px;">
+        <a href="" id="logoutBtn" style="color: #ff9999;" >🚪 Logout</a>
+    </div>
+</div>
+
+<div class="main">
+    <div class="top_bar">
+        <label for="menu" class="hamburger">☰</label>
+        <h2 style="margin-left: 20px;">Dashboard</h2>
+        <div id="topbarmenu">
+            <a href="users.html" id="a1">Invite Users</a>
+            <a href="courses.html" id="a2">Create Course</a>
+            <div class="right_icons">
+                <i class="fa-solid fa-bell" id="bell"></i>
+            </div>
+            <a href="profile.html" id="a3">My Profile</a>
+        </div>
+    </div>
+
+<div id="body1" style="display: flex; margin-left: 10px;">
+
+    <div id="card1">
+        <h2>Total Course</h2>
+        <h1 id="totalCourses">0</h1>
+    </div>
+
+    <div id="card2">
+        <h2>Total Authors</h2>
+        <h1 id="totalAuthors">0</h1>
+    </div>
+
+    <div id="card3">
+        <h2>Total Users</h2>
+        <h1 id="totalUsers">0</h1>
+    </div>
+
+</div>
+   <div id="body2" style="display:flex">
+
+    <a href="courses.html" id="createcourse">
+        <img src="../img/new.png" alt="Create Course">
+    </a>
+
+    <a href="#" id="createassessment">
+        <img src="../img/1000068861.png" alt="Create Assessment">
+    </a>
+    </div>
+        <div id="courseModal" class="modal">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h2>Create New Course</h2>
+                    <span id="closeModal">&times;</span>
+                </div>
+
+                <div class="modal-body">
+
+                    <label>Course Title</label>
+                    <input type="text" id="courseTitle">
+
+                    <label>Category</label>
+                    <select id="courseCategory">
+                        <option>Web Development</option>
+                        <option>Python</option>
+                        <option>UI / UX</option>
+                        <option>Computer Basics</option>
+                    </select>
+
+                    <label>Instructor</label>
+                    <input type="text" id="courseInstructor">
+
+                    <label>Thumbnail</label>
+                    <input type="file" id="courseThumbnail" accept="image/*">
+
+                    <label>Description</label>
+                    <textarea id="courseDescription"></textarea>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button id="cancelBtn">Cancel</button>
+                    <button id="nextBtn">Add Modules →</button>
+                </div>
+
+            </div>
+
+        </div>
+<div id="moduleModal" class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h2>Module Builder</h2>
+            <span id="closeModule">&times;</span>
+        </div>
+
+        <div class="modal-body">
+
+            <h3 id="moduleHeading">Module 1</h3>
+
+            <label>Module Title</label>
+            <input type="text" id="moduleTitle" placeholder="HTML Basics">
+
+            <label>Video Title</label>
+            <input type="text" id="videoTitle" placeholder="Introduction to HTML">
+
+            <label>Video URL</label>
+            <input type="text" id="videoUrl" placeholder="Paste YouTube URL">
+
+            <label>Blog / Explanation</label>
+            <textarea id="blogText" placeholder="Explain this module..."></textarea>
+
+            <h3 style="margin-top:10px;">Quiz Section</h3>
+
+            <!-- Quiz 1 -->
+            <div class="quiz-card">
+
+                <h4>Quiz 1</h4>
+
+                <input type="text" id="q1" placeholder="Enter Question">
+
+                <div class="quiz-option">
+                    <input type="radio" name="q1answer" value="A">
+                    <input type="text" id="q1a" placeholder="Option A">
+                </div>
+
+                <div class="quiz-option">
+                    <input type="radio" name="q1answer" value="B">
+                    <input type="text" id="q1b" placeholder="Option B">
+                </div>
+
+                <div class="quiz-option">
+                    <input type="radio" name="q1answer" value="C">
+                    <input type="text" id="q1c" placeholder="Option C">
+                </div>
+
+            </div>
+
+            <!-- Quiz 2 -->
+            <div class="quiz-card">
+
+                <h4>Quiz 2</h4>
+
+                <input type="text" id="q2" placeholder="Enter Question">
+
+                <div class="quiz-option">
+                    <input type="radio" name="q2answer" value="A">
+                    <input type="text" id="q2a" placeholder="Option A">
+                </div>
+
+                <div class="quiz-option">
+                    <input type="radio" name="q2answer" value="B">
+                    <input type="text" id="q2b" placeholder="Option B">
+                </div>
+
+                <div class="quiz-option">
+                    <input type="radio" name="q2answer" value="C">
+                    <input type="text" id="q2c" placeholder="Option C">
+                </div>
+
+            </div>
+
+            <!-- Quiz 3 -->
+            <div class="quiz-card">
+
+                <h4>Quiz 3</h4>
+
+                <input type="text" id="q3" placeholder="Enter Question">
+
+                <div class="quiz-option">
+                    <input type="radio" name="q3answer" value="A">
+                    <input type="text" id="q3a" placeholder="Option A">
+                </div>
+
+                <div class="quiz-option">
+                    <input type="radio" name="q3answer" value="B">
+                    <input type="text" id="q3b" placeholder="Option B">
+                </div>
+
+                <div class="quiz-option">
+                    <input type="radio" name="q3answer" value="C">
+                    <input type="text" id="q3c" placeholder="Option C">
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="modal-footer">
+            <button id="saveModule">Save Module</button>
+            <button id="addAnother">+ Next Module</button>
+            <button id="publishCourse">Publish Course</button>
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+    <h2 style="margin: 20px 25px 10px;">Recent Draft Course</h2>
+    <!-- <div id="body3" style="display: flex; margin-left: 10px;">
+        <div id="draft1"> 
+            <div class="card-image"></div>
+            <div class="card-body">
+                <h2>Web Development</h2>
+                <p>Learn HTML and CSS basics.</p>
+            </div>
+        </div>
+        <div id="draft2">
+            <div class="card-image"></div>
+            <div class="card-body">
+                <h2>Python Basics</h2>
+                <p>Python coding for beginners.</p>
+            </div>
+        </div>
+        <div id="draft3">
+            <div class="card-image"></div>
+            <div class="card-body">
+                <h2>UI/UX Design</h2>
+                <p>Design cool websites and apps.</p>
+            </div>
+        </div>
+        <div id="draft4">
+            <div class="card-image"></div>
+            <div class="card-body">
+                <h2>Computer Basics</h2>
+                <p>Fundamentals of computers.</p>
+            </div>
+        </div>
+    </div> -->
+</div>
+<script src="dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Staff Dashboard</title>
+    <link rel="stylesheet" href="staff.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body>
+<input type="checkbox" id="menu">
+
+<div class="sidebar">
+    <h2>SkillHub</h2>
+    <ul>
+        <li class="active"><a href="dashboard.html">🏠 Dashboard</a></li>
+        <li><a href="courses.html">🛡️ My Courses</a></li>
+        <li><a href="assessments.html">📝 Assessments</a></li>
+        <li><a href="profile.html">👤 My Profile</a></li>
+    </ul>
+    <div style="padding: 20px;">
+        <a href="" style="color: #ff9999;">🚪 Logout</a>
+    </div>
+</div>
+
+<div class="main">
+    <div class="top_bar">
+        <label for="menu" class="hamburger">☰</label>
+        <h2 style="margin-left: 20px;">Staff Dashboard</h2>
+        <div id="topbarmenu">
+            <a href="courses.html" id="a1">Create Course</a>
+            <a href="assessments.html" id="a2">Create Assessment</a>
+            <div class="right_icons">
+                <i class="fa-solid fa-bell"></i>
+            </div>
+            <a href="profile.html" id="a3">My Profile</a>
+        </div>
+    </div>
+
+    <div id="body1" style="display: flex; margin-left: 10px;">
+        <div id="card1"><h2>My Courses</h2> <h1>5</h1> </div>
+        <div id="card2"><h2>My Students</h2> <h1>85</h1></div>
+        <div id="card3"><h2>Assessments</h2> <h1>12</h1></div>
+    </div>
+    <div id="body2" style="display:flex"><a href=""><img id='createcourse'  src="../img/new.png" alt=""></a>    <a href=""><img id="createassessment" src="../img/1000068861.png" alt=""></a> </div>
+
+    <h2 style="margin: 20px 25px 10px;">My Courses</h2>
+    <div id="body3" style="display: flex; margin-left: 10px;">
+        <div id="draft1"> 
+            <div class="card-image"></div>
+            <div class="card-body">
+                <h2>Web Development</h2>
+                <p>45 Students Enrolled.</p>
+            </div>
+        </div>
+        <div id="draft2">
+            <div class="card-image"></div>
+            <div class="card-body">
+                <h2>Python Programming</h2>
+                <p>40 Students Enrolled.</p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

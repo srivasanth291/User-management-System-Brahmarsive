@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Users</title>
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+
+<body>
+    <input type="checkbox" id="menu">
+
+    <div class="sidebar">
+        <h2>SkillHub</h2>
+        <ul>
+            <li><a href="dashboard.html">🏠 Dashboard</a></li>
+            <li class="active"><a href="users.html">👥 Users</a></li>
+            <li><a href="course-mapping.html">🔗 Course Mapping</a></li>
+            <li><a href="courses.html">🛡️ Course</a></li>
+            <li><a href="profile.html">👤 My Profile</a></li>
+            <li><a href="settings.html">⚙️ Settings</a></li>
+        </ul>
+        <div style="padding: 20px;">
+            <a href="#" id="logoutBtn" style="color: #ff9999;">🚪 Logout</a>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="top_bar">
+            <label for="menu" class="hamburger">☰</label>
+            <h2 style="margin-left: 20px;">Users</h2>
+            <div id="topbarmenu">
+                <a href="users.html" id="a1">Create Assessment</a>
+                <a href="courses.html" id="a2">Create Course</a>
+                <div class="right_icons">
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+                <a href="profile.html" id="a3">My Profile</a>
+            </div>
+        </div>
+
+        <div id="userbar">
+            <div id="duo">
+                <a href="#" id="activeuser">Active Users</a>
+                <a href="#" id="pending">Pending Invites</a>
+            </div>
+            <a href="#" id="adduser">Add Users</a>
+        </div>
+
+        <div id="analyticalbar">
+            <h3>Active User List</h3>
+            <div id="searchbar">
+                <input type="text" id="userSearch" placeholder="Search users...">
+        <select id="roleFilter" >
+            <option value="all">All Roles</option>
+            <option value="student">Student</option>
+            <option value="staff">Staff</option>
+        </select>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email ID</th>
+                        <th>Last Login</th>
+                        <th>Role</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="userTableBody">
+
+                </tbody>
+
+
+            </table>
+        </div>
+        <!-- this area will pop when add uaser button is pressed -->
+        <div id="userModal" class="modal">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h2>Add User</h2>
+                    <span id="closeModal">&times;</span>
+                </div>
+
+                <form id="userForm">
+
+                    <div class="form-group">
+                        <label for="userName">Name</label>
+                        <input type="text" id="userName" placeholder="Enter user name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="userEmail">Email</label>
+                        <input type="email" id="userEmail" placeholder="Enter email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="userPassword">Password</label>
+                        <input type="password" id="userPassword" placeholder="Enter password" required>
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="userRole">Role</label>
+
+                        <select id="userRole" required>
+
+                            <option value="">
+                                Select Role
+                            </option>
+
+                            <option value="student">
+                                Student
+                            </option>
+
+                            <option value="staff">
+                                Staff
+                            </option>
+
+                        </select>
+                         <label for="userStatus">Status</label>
+
+                        <select id="userStatus" required>
+
+                            <option value="active">
+                                Active
+                            </option>
+
+                            <option value="pending">
+                                Pending Invite
+                            </option>
+
+                        </select>
+
+                    </div>
+                    <div id="staffPermissions">
+
+                        <h3>Staff Permissions</h3>
+
+                        <label>
+                            <input type="checkbox" id="createCourse">
+                            Create Course
+                        </label>
+
+                        <label>
+                            <input type="checkbox" id="editCourse">
+                            Edit Course
+                        </label>
+
+                        <label>
+                            <input type="checkbox" id="deleteCourse">
+                            Delete Course
+                        </label>
+
+                        <label>
+                            <input type="checkbox" id="createAssessment">Create Assessment </label>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" id="cancelUser">Cancel </button>
+                        <button type="submit">
+                            Add User
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="../js/auth.js"></script>
+    <script src="users.js"></script>
+</body>
+
+</html>

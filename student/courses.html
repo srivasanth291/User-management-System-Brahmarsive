@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Courses</title>
+    <link rel="stylesheet" href="student.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body>
+<input type="checkbox" id="menu">
+
+<div class="sidebar">
+    <h2>SkillHub</h2>
+    <ul>
+        <li><a href="dashboard.html">🏠 Dashboard</a></li>
+        <li class="active"><a href="courses.html">🛡️ My Courses</a></li>
+        <li><a href="assessments.html">📝 Assessments</a></li>
+        <li><a href="profile.html">👤 My Profile</a></li>
+    </ul>
+    <div style="padding: 20px;">
+        <a href="" style="color: #ff9999;">🚪 Logout</a>
+    </div>
+</div>
+
+<div class="main">
+    <div class="top_bar">
+        <label for="menu" class="hamburger">☰</label>
+        <h2 style="margin-left: 20px;">My Courses</h2>
+        <div id="topbarmenu">
+            <a href="courses.html" id="a1">My Courses</a>
+            <a href="assessments.html" id="a2">Assessments</a>
+            <div class="right_icons">
+                <i class="fa-solid fa-bell"></i>
+            </div>
+            <a href="profile.html" id="a3">My Profile</a>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <a href="#" class="tab active">My Courses</a>
+    </div>
+</body>
+</html>
