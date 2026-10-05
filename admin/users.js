@@ -22,7 +22,7 @@ let usersData = [
         name: "Sri Vasanth R",
         email: "srivasanth@gmail.com",
         lastLogin: "12 Sep 2026",
-        role: "Student"
+        role: "student"
     },
 
     {
@@ -30,7 +30,7 @@ let usersData = [
         name: "Dr. Arjun",
         email: "arjun@gmail.com",
         lastLogin: "12 Sep 2026",
-        role: "Staff"
+        role: "staff"
     },
 
     {
@@ -38,7 +38,7 @@ let usersData = [
         name: "Kaviya M",
         email: "kaviya@gmail.com",
         lastLogin: "10 Sep 2026",
-        role: "Student"
+        role: "student"
     }
 ];
 

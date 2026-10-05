@@ -22,7 +22,7 @@ const mappingCourses =
 let courseMappings =
     JSON.parse(localStorage.getItem("courseMappings")) || [];
 
-const students = users.filter(function (user) {
+const students = mappingUser.filter(function (user) {
 
     return user.role.toLowerCase() === "student";
 
