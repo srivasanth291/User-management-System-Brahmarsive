@@ -1,0 +1,21 @@
+.main {
+    margin-left: 0;
+    padding: 100px 30px 30px;
+    min-height: 100vh;
+    box-sizing: border-box;
+    transition: margin-left 0.4s;
+}
+
+.main.move {
+    margin-left: 240px;
+}
+
+@media (max-width: 768px) {
+    .main {
+        padding: 100px 15px 20px;
+    }
+
+    .main.move {
+        margin-left: 0;
+    }
+}

@@ -1,0 +1,30 @@
+
+.student-dashboard .student-quick-card {
+  position: relative;
+}
+
+.student-dashboard .student-quick-label {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.student-dashboard .student-recent-course {
+  display: block;
+  width: 100%;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.student-dashboard .student-recent-course:focus-visible {
+  outline: 3px solid #457ef8;
+  outline-offset: 3px;
+}

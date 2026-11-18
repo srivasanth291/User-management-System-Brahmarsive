@@ -1,0 +1,144 @@
+.sidebar {
+    position: fixed;
+    width: 240px;
+    height: 100vh;
+    top: 0;
+    left: -240px;
+    background: #08005F;
+    color: white;
+    transition: left 0.4s ease;
+    z-index: 100;
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.sidebar.open {
+    left: 0;
+}
+
+.sidebar h2 {
+    margin-top: 20px;
+    text-align: center;
+    margin-bottom: 35px;
+    color: white;
+}
+
+
+.sidebar a {
+    color: white;
+    text-decoration: none;
+    display: block;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar li {
+    padding: 14px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.sidebar li:hover {
+    background: #84a8db;
+}
+
+
+.sidebar li.active {
+    background: #457ef8;
+}
+
+.sidebar li a {
+    display: block;
+    color: white;
+    text-decoration: none;
+}
+
+.sidebar li:has(a.active) {
+    background: #457ef8;
+}
+
+.hamburger {
+  position: fixed;
+  top: 28px;
+  left: 20px;
+  z-index: 101;
+  background: transparent;
+  color: #555;
+  border: none;
+  padding: 8px;
+  font-size: 28px;
+  cursor: pointer;
+  transition: left 0.3s ease;
+}
+
+.hamburger.open {
+  left: 260px;
+}
+
+.logout {
+    padding: 14px;
+    margin-top: 30px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.logout:hover {
+    background: #84a8db;
+}
+
+.main-content {
+  margin-left: 0;
+  padding: 0 25px 25px;
+  min-width: 0;
+  transition: margin-left 0.3s ease;
+}
+
+.main-content.shifted {
+  margin-left: 240px;
+}
+
+.page-content {
+  padding-top: 110px;
+}
+.sidebar .logout {
+    position: static;
+    margin-top: 120px;
+    display: block;
+    width: 100%;
+    padding:  15px;
+    background: transparent;
+    border: none;
+    color: white;
+    text-align: left;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.sidebar .logout:hover {
+    background: #241b80;
+}
+/* for mobile */
+
+@media (max-width: 768px) {
+
+    .sidebar {
+        width: 220px;
+        left: -220px;
+    }
+
+    .sidebar.open {
+        left: 0;
+    }
+
+    .hamburger.open {
+        left: 235px;
+    }
+
+    .main-content {
+        padding: 80px 15px 20px;
+    }
+}

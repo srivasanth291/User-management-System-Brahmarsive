@@ -1,0 +1,12 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #e7e7ef;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}

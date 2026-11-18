@@ -1,0 +1,50 @@
+
+.student-courses .student-course-item {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.student-courses .student-course-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.student-courses .student-course-item:focus-visible {
+  outline: 3px solid #457ef8;
+  outline-offset: 3px;
+}
+
+.student-courses .student-course-footer {
+  margin-top: 16px;
+}
+
+.student-courses .student-course-footer button {
+  width: 100%;
+  padding: 11px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #457ef8;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.student-courses .student-course-footer button:hover {
+  background: #3268dd;
+}
+.student-progress-bar {
+  width: 100%;
+  height: 8px;
+  margin: 12px 0;
+  border-radius: 20px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+
+.student-progress-bar div {
+  height: 100%;
+  border-radius: 20px;
+  background: #457ef8;
+  transition: width 0.3s ease;
+}

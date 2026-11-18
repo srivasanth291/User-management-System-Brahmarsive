@@ -1,0 +1,287 @@
+.admin-dashboard {
+  width: 100%;
+  min-width: 0;
+  font-family: Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+.welcome-section {
+  margin-bottom: 25px;
+}
+
+.welcome-section h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 8px;
+}
+
+.welcome-section p {
+  color: #64748b;
+  font-size: 15px;
+  margin: 0;
+}
+
+.stats-container {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+.stat-card {
+  min-width: 0;
+  height: 170px;
+  box-sizing: border-box;
+  padding: 25px;
+  border-radius: 25px;
+  color: white;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  transition: transform 0.2s ease,
+              box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.stat-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 10px;
+}
+
+.stat-card h2 {
+  font-size: 34px;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+}
+
+.course-card {
+  background: #1886dc;
+}
+
+.author-card {
+  background: #1010ae;
+}
+
+.user-card {
+  background: #9214c4;
+}
+
+.student-card {
+  background: #0d9488;
+}
+
+
+.dashboard-quick-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 30px;
+  margin-top: 35px;
+}
+
+.quick-image-card {
+  position: static;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  border-radius: 25px;
+  overflow: hidden;
+  background: transparent;
+  cursor: pointer;
+}
+
+.quick-image-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1.65 / 1;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.quick-image-card:hover img {
+  transform: scale(1.03);
+}
+
+.quick-image-card:focus-visible {
+  outline: 3px solid #457ef8;
+  outline-offset: 4px;
+}
+
+.recent-courses {
+  margin-top: 40px;
+  padding-bottom: 30px;
+}
+
+.recent-courses-header {
+  margin-bottom: 20px;
+}
+
+.recent-courses-header h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+
+
+.recent-course-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+
+
+.recent-course-card {
+  min-width: 0;
+  background: white;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+
+  transition: transform 0.2s ease,
+              box-shadow 0.2s ease;
+}
+
+.recent-course-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+
+.recent-course-card img {
+  display: block;
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+
+.course-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  height: 180px;
+
+  background: #e0e7ff;
+  font-size: 40px;
+}
+
+.recent-course-info {
+  padding: 18px;
+}
+
+.recent-course-info h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 8px;
+  overflow-wrap: anywhere;
+}
+
+.recent-course-info p {
+  color: #64748b;
+  font-size: 14px;
+  margin: 0 0 8px;
+}
+
+.recent-course-info span {
+  color: #475569;
+  font-size: 13px;
+}
+
+
+@media (max-width: 1250px) {
+  .stats-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .recent-course-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Tablet */
+
+@media (max-width: 768px) {
+  .dashboard-quick-actions {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .stats-container {
+    gap: 15px;
+  }
+
+  .stat-card {
+    height: 160px;
+    padding: 20px;
+  }
+
+  .stat-card h3 {
+    font-size: 17px;
+  }
+
+  .stat-card h2 {
+    font-size: 30px;
+  }
+
+  .recent-course-grid {
+    gap: 15px;
+  }
+}
+
+/* Mobile */
+
+@media (max-width: 600px) {
+  .welcome-section h2 {
+    font-size: 20px;
+  }
+
+  .stats-container {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card {
+    height: 145px;
+  }
+
+  .dashboard-quick-actions {
+    margin-top: 25px;
+  }
+
+  .quick-image-card {
+    border-radius: 18px;
+  }
+
+  .recent-courses {
+    margin-top: 30px;
+  }
+
+  .recent-courses-header h2 {
+    font-size: 21px;
+  }
+
+  .recent-course-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .recent-course-card img,
+  .course-placeholder {
+    height: 190px;
+  }
+}

@@ -1,0 +1,85 @@
+.top-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 85px;
+  z-index: 100;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 28px 25px 0 90px;
+  box-sizing: border-box;
+
+  background: #e7e7ef;
+  border-bottom: 1px solid #d5d5df;
+  font-family: Arial, sans-serif;
+}
+
+/* Sidebar open */
+.main-content.shifted .top-header {
+  left: 240px;
+}
+
+.top-header h1 {
+
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.header-actions button {
+  position: static;
+  font-family: Arial, sans-serif;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 30px;
+  font-size: 16px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.invite-btn {
+  background: #457ef8;
+  color: white;
+}
+
+.create-btn {
+  background: #32ed78;
+  color: white;
+}
+
+.notification-btn {
+  background: transparent;
+  font-size: 22px !important;
+  padding: 8px !important;
+}
+
+.profile-btn {
+  background: transparent;
+  color: #64748b;
+}
+
+@media (max-width: 900px) {
+  .top-header {
+    flex-wrap: wrap;
+    padding-left: 65px;
+  }
+
+  .header-actions {
+    justify-content: flex-start;
+    gap: 10px;
+  }
+}

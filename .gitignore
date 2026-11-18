@@ -1,0 +1,10 @@
+node_modules/
+venv/
+.venv/
+__pycache__/
+*.pyc
+dist/
+.env
+admin.zip
+z-react/skillhub/src/images/create-course.html
+z-react/skillhub/src/images/create-course_files/

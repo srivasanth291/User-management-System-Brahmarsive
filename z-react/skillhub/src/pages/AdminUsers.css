@@ -1,0 +1,364 @@
+
+.admin-users {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  color: #111827;
+  font-family: Arial, sans-serif;
+}
+
+/* Tabs and Invite Button */
+
+.users-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.users-status-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 5px;
+  background: #dedee3;
+  border-radius: 30px;
+}
+
+.users-status-tabs button {
+  position: static;
+  border: none;
+  background: transparent;
+  color: #002e83;
+  padding: 11px 18px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 25px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.users-status-tabs button.selected {
+  background: #002e83;
+  color: white;
+}
+
+.users-invite-btn {
+  position: static;
+  padding: 11px 22px;
+  background: #002e83;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* White User List Panel */
+
+.users-list-panel {
+  background: white;
+  border-radius: 18px;
+  padding: 22px;
+}
+
+.users-list-panel h2 {
+  margin: 0 0 22px;
+  color: #06175c;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+/* Search and Filter */
+
+.users-list-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.users-list-controls input {
+  width: 260px;
+  max-width: 100%;
+  height: 40px;
+  padding: 0 16px;
+  box-sizing: border-box;
+  border: none;
+  border-radius: 22px;
+  background: #deb9f7;
+  color: #222;
+  font-size: 14px;
+  outline-offset: 2px;
+}
+
+.users-list-controls input::placeholder {
+  color: #756680;
+}
+
+.users-list-controls select {
+  height: 40px;
+  min-width: 120px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: white;
+  color: #111827;
+  font-size: 14px;
+}
+
+/* User Table */
+
+.users-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 12px;
+}
+
+.users-screenshot-table {
+  width: 100%;
+  min-width: 700px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.users-screenshot-table thead {
+  background: #edf6fc;
+}
+
+.users-screenshot-table th {
+  padding: 15px 14px;
+  color: #06175c;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.users-screenshot-table td {
+  padding: 14px;
+  color: #243047;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.users-screenshot-table tbody tr:nth-child(odd) {
+  background: #edf6fc;
+}
+
+.users-screenshot-table tbody tr:nth-child(even) {
+  background: #dcefee;
+}
+
+.users-screenshot-table th:nth-child(1) {
+  width: 20%;
+}
+
+.users-screenshot-table th:nth-child(2) {
+  width: 29%;
+}
+
+.users-screenshot-table th:nth-child(3) {
+  width: 17%;
+}
+
+.users-screenshot-table th:nth-child(4) {
+  width: 12%;
+}
+
+.users-screenshot-table th:nth-child(5) {
+  width: 22%;
+}
+
+.users-table-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.users-table-actions button {
+  position: static;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  color: #1e293b;
+  padding: 6px 9px;
+  border-radius: 5px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.users-table-actions button:hover {
+  background: #e2e8f0;
+}
+
+.users-no-results {
+  text-align: center;
+  padding: 30px !important;
+  color: #64748b !important;
+}
+
+/* Modal */
+
+.users-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.users-form-modal {
+  width: 100%;
+  max-width: 460px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 24px;
+  background: white;
+  border-radius: 14px;
+}
+
+.users-form-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.users-form-heading h2 {
+  margin: 0;
+  font-size: 19px;
+  color: #06175c;
+}
+
+.users-form-heading button {
+  position: static;
+  border: none;
+  background: transparent;
+  color: #475569;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.users-form-modal form > label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 16px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.users-form-modal form > label input,
+.users-form-modal form > label select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  background: white;
+  color: #111827;
+  font-size: 14px;
+}
+
+.users-staff-permissions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 15px 0;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.users-staff-permissions legend {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.users-staff-permissions label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #475569;
+  font-size: 13px;
+}
+
+.users-invite-note {
+  margin: 12px 0;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.users-form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.users-form-buttons button {
+  position: static;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.users-cancel {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.users-save {
+  background: #002e83;
+  color: white;
+}
+
+/* Responsive */
+
+@media (max-width: 800px) {
+  .users-top-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .users-status-tabs {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .users-invite-btn {
+    align-self: flex-end;
+  }
+}
+
+@media (max-width: 600px) {
+  .users-list-panel {
+    padding: 15px;
+  }
+
+  .users-list-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .users-list-controls input,
+  .users-list-controls select {
+    width: 100%;
+  }
+
+  .users-form-modal {
+    padding: 18px;
+  }
+}

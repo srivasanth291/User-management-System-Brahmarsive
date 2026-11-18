@@ -1,0 +1,299 @@
+.admin-profile-page,
+.admin-settings-page {
+  width: 100%;
+  max-width: 100%;
+  color: #111827;
+  box-sizing: border-box;
+}
+
+.admin-preferences-card {
+  width: 100%;
+  box-sizing: border-box;
+  background: white;
+  padding: 25px;
+  margin-bottom: 22px;
+  border-radius: 15px;
+  border: 1px solid #e2e8f0;
+}
+
+.admin-preferences-card h2 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  color: #111827;
+}
+
+.admin-preferences-card h3 {
+  margin: 0 0 10px;
+  font-size: 16px;
+  color: #111827;
+}
+
+.admin-preferences-card p {
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* PROFILE */
+
+.admin-profile-top {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+  padding-bottom: 23px;
+  margin-bottom: 23px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.admin-profile-avatar {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  background: #002e83;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 27px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.admin-profile-top h2 {
+  margin-bottom: 6px;
+}
+
+.admin-profile-top p {
+  margin: 0;
+}
+
+.admin-pref-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.admin-pref-field label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.admin-pref-field input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 13px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: white;
+  color: #111827;
+  font-size: 14px;
+}
+
+.admin-pref-field input:disabled {
+  background: #f1f5f9;
+  color: #475569;
+  opacity: 1;
+}
+
+.admin-pref-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.admin-pref-actions button {
+  position: static;
+  border: none;
+  background: #002e83;
+  color: white;
+  border-radius: 8px;
+  padding: 11px 18px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.admin-pref-actions .admin-pref-cancel {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.admin-pref-message {
+  color: #15803d !important;
+  font-size: 13px;
+}
+
+/* SETTINGS */
+
+.admin-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.admin-setting-row:last-child {
+  border-bottom: none;
+}
+
+.admin-setting-row h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+}
+
+.admin-setting-row p {
+  margin: 0;
+}
+
+.admin-setting-row select {
+  padding: 9px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: white;
+  color: #111827;
+  font-size: 14px;
+}
+
+/* TOGGLE SWITCH */
+
+.admin-switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 25px;
+  flex-shrink: 0;
+}
+
+.admin-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.admin-switch-slider {
+  position: absolute;
+  inset: 0;
+  background: #cbd5e1;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.admin-switch-slider::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  bottom: 3px;
+  height: 19px;
+  width: 19px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.admin-switch input:checked + .admin-switch-slider {
+  background: #002e83;
+}
+
+.admin-switch input:checked + .admin-switch-slider::before {
+  transform: translateX(21px);
+}
+
+.admin-switch input:focus-visible + .admin-switch-slider {
+  outline: 2px solid #457ef8;
+  outline-offset: 3px;
+}
+
+.admin-settings-note {
+  color: #64748b;
+  font-size: 13px;
+}
+
+/* DARK THEME */
+
+html[data-skillhub-theme="dark"] body,
+html[data-skillhub-theme="dark"] .top-header {
+  background: #111827;
+}
+
+html[data-skillhub-theme="dark"] .top-header {
+  border-color: #334155;
+}
+
+html[data-skillhub-theme="dark"] .top-header h1,
+html[data-skillhub-theme="dark"] .welcome-section h2,
+html[data-skillhub-theme="dark"] .recent-courses-header h2 {
+  color: #f8fafc;
+}
+
+html[data-skillhub-theme="dark"] .hamburger,
+html[data-skillhub-theme="dark"] .profile-btn {
+  color: #e2e8f0;
+}
+
+html[data-skillhub-theme="dark"] .admin-preferences-card,
+html[data-skillhub-theme="dark"] .users-list-panel,
+html[data-skillhub-theme="dark"] .course-item,
+html[data-skillhub-theme="dark"] .recent-course-card,
+html[data-skillhub-theme="dark"] .course-form,
+html[data-skillhub-theme="dark"] .saved-module-card {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+html[data-skillhub-theme="dark"] .admin-preferences-card h2,
+html[data-skillhub-theme="dark"] .admin-preferences-card h3,
+html[data-skillhub-theme="dark"] .admin-pref-field label,
+html[data-skillhub-theme="dark"] .recent-course-info h3,
+html[data-skillhub-theme="dark"] .course-details h3,
+html[data-skillhub-theme="dark"] .users-list-panel h2 {
+  color: #f8fafc;
+}
+
+html[data-skillhub-theme="dark"] .admin-pref-field input,
+html[data-skillhub-theme="dark"] .admin-setting-row select {
+  background: #334155;
+  color: #f8fafc;
+  border-color: #475569;
+}
+
+html[data-skillhub-theme="dark"] .admin-pref-field input:disabled {
+  background: #283548;
+  color: #cbd5e1;
+}
+
+html[data-skillhub-theme="dark"] .admin-setting-row,
+html[data-skillhub-theme="dark"] .admin-profile-top {
+  border-color: #334155;
+}
+
+html[data-skillhub-theme="dark"] .users-screenshot-table tbody tr,
+html[data-skillhub-theme="dark"] .users-screenshot-table thead {
+  background: #263449;
+}
+
+html[data-skillhub-theme="dark"] .users-screenshot-table td,
+html[data-skillhub-theme="dark"] .users-screenshot-table th {
+  color: #f8fafc;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 600px) {
+  .admin-preferences-card {
+    padding: 18px;
+  }
+
+  .admin-setting-row {
+    gap: 12px;
+  }
+
+  .admin-pref-actions {
+    flex-wrap: wrap;
+  }
+}

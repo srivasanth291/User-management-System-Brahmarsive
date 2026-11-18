@@ -1,0 +1,536 @@
+.staff-layout {
+  min-height: 100vh;
+  background: #e7e7ef;
+  color: #111827;
+  font-family: Arial, sans-serif;
+}
+
+.staff-layout *,
+.staff-layout *::before,
+.staff-layout *::after {
+  box-sizing: border-box;
+}
+
+.staff-layout .staff-sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 110;
+  display: flex;
+  flex-direction: column;
+  width: 240px;
+  height: 100vh;
+  padding: 0;
+  background: #08005f;
+  color: #ffffff;
+  overflow-x: hidden;
+  overflow-y: auto;
+  transition: left 0.3s ease;
+}
+
+.staff-layout .staff-sidebar.collapsed {
+  left: -240px;
+}
+
+.staff-layout .staff-sidebar h2 {
+  margin: 20px 0 35px;
+  padding: 0 12px;
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.staff-layout .staff-sidebar nav {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 0;
+}
+
+.staff-layout .staff-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 50px;
+  padding: 14px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 400;
+  white-space: nowrap;
+  transition: background-color 0.2s ease;
+}
+
+.staff-layout .staff-nav-link:hover,
+.staff-layout .staff-nav-link:focus-visible {
+  background: #241b80;
+  color: #ffffff;
+}
+
+.staff-layout .staff-nav-link.active,
+.staff-layout .staff-nav-link[aria-current="page"] {
+  background: #457ef8;
+  color: #ffffff;
+}
+
+.staff-layout .staff-nav-link > span:first-child {
+  flex: 0 0 23px;
+  text-align: center;
+}
+
+.staff-layout .staff-nav-label {
+  display: inline;
+  color: inherit;
+  font-size: inherit;
+  opacity: 1;
+  visibility: visible;
+}
+
+.staff-layout .staff-logout {
+  position: static;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 50px;
+  margin-top: auto;
+  padding: 14px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: #ffffff;
+  text-align: left;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.staff-layout .staff-logout:hover,
+.staff-layout .staff-logout:focus-visible {
+  background: #241b80;
+}
+
+.staff-layout .staff-main {
+  min-width: 0;
+  width: auto;
+  min-height: 100vh;
+  margin-left: 240px;
+  padding: 0;
+  background: #e7e7ef;
+  transition: margin-left 0.3s ease;
+}
+
+.staff-layout .staff-main.expanded {
+  margin-left: 0;
+}
+
+.staff-layout .staff-header {
+  position: fixed;
+  top: 0;
+  left: 240px;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 20px;
+  width: auto;
+  height: 85px;
+  padding: 28px 25px 0 90px;
+  background: #e7e7ef;
+  border-bottom: 1px solid #d5d5df;
+  box-shadow: none;
+  transition: left 0.3s ease;
+}
+
+.staff-layout .staff-main.expanded .staff-header {
+  left: 0;
+}
+
+.staff-layout .staff-menu-toggle {
+  position: fixed;
+  top: 28px;
+  left: 260px;
+  z-index: 120;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 42px;
+  padding: 6px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #555555;
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  transition: left 0.3s ease;
+}
+
+.staff-layout .staff-main.expanded .staff-menu-toggle {
+  left: 20px;
+}
+
+.staff-layout .staff-menu-toggle:hover,
+.staff-layout .staff-menu-toggle:focus-visible {
+  background: #dedee8;
+}
+
+.staff-layout .staff-header-user {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  min-width: 0;
+  color: #111827;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.staff-layout .staff-role-label {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 15px;
+  border-radius: 30px;
+  background: #e0e7ff;
+  color: #1d4ed8;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.staff-layout .staff-page-content {
+  min-width: 0;
+  max-width: 100%;
+  padding: 110px 25px 30px;
+}
+
+.staff-layout .staff-page-content > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.staff-layout .staff-page-heading {
+  margin-bottom: 25px;
+}
+
+.staff-layout .staff-page-heading h1 {
+  margin: 0 0 8px;
+  color: #111827;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.staff-layout .staff-page-heading p {
+  margin: 0;
+  color: #64748b;
+  font-size: 15px;
+}
+
+.staff-layout .staff-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  width: 100%;
+  margin-bottom: 35px;
+}
+
+.staff-layout .staff-stat-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  min-height: 170px;
+  padding: 25px;
+  border: none;
+  border-radius: 25px;
+  background: #1886dc;
+  color: #ffffff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.staff-layout .staff-stat-card:nth-child(2) {
+  background: #1010ae;
+}
+
+.staff-layout .staff-stat-card:nth-child(3) {
+  background: #9214c4;
+}
+
+.staff-layout .staff-stat-card:nth-child(4) {
+  background: #0d9488;
+}
+
+.staff-layout .staff-stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.staff-layout .staff-stat-card span {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.staff-layout .staff-stat-card h2 {
+  margin: 10px 0 0;
+  color: #ffffff;
+  font-size: 34px;
+  font-weight: 700;
+}
+
+.staff-layout .staff-dashboard-section {
+  min-width: 0;
+  padding: 25px;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  background: #ffffff;
+}
+
+.staff-layout .staff-section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.staff-layout .staff-section-heading h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.staff-layout .staff-section-heading a {
+  color: #0066c9;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.staff-layout .staff-course-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.staff-layout .staff-course-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  background: #ffffff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.staff-layout .staff-course-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+.staff-layout .staff-course-card img {
+  display: block;
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.staff-layout .staff-course-placeholder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 180px;
+  background: #e0e7ff;
+  font-size: 40px;
+}
+
+.staff-layout .staff-course-info {
+  padding: 18px;
+}
+
+.staff-layout .staff-course-info h3 {
+  margin: 0 0 8px;
+  color: #111827;
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+
+.staff-layout .staff-course-info p {
+  margin: 0 0 8px;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.staff-layout .staff-course-info span {
+  display: inline-block;
+  margin: 4px 0 10px;
+  padding: 6px 10px;
+  border-radius: 20px;
+  background: #e0e7ff;
+  color: #1d4ed8;
+  font-size: 12px;
+}
+
+.staff-layout .staff-view-button {
+  position: static;
+  padding: 10px 15px;
+  border: 0;
+  border-radius: 8px;
+  background: #002e83;
+  color: #ffffff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.staff-layout .staff-view-button:hover {
+  background: #0143ac;
+}
+
+.staff-layout .staff-empty-state {
+  padding: 32px 18px;
+  border-radius: 10px;
+  background: #f8fafc;
+  color: #64748b;
+  text-align: center;
+  font-size: 14px;
+}
+
+.staff-layout .admin-course-mapping,
+.staff-layout .staff-students-page,
+.staff-layout .staff-courses-page,
+.staff-layout .staff-preferences-page {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  margin-left: 0;
+}
+
+.staff-layout .mapping-form-card,
+.staff-layout .mapping-list-card,
+.staff-layout .staff-students-panel,
+.staff-layout .staff-preferences-card {
+  max-width: 100%;
+  border-radius: 18px;
+}
+
+.staff-layout .mapping-form {
+  width: 100%;
+}
+
+.staff-layout .mapping-field {
+  min-width: 0;
+}
+
+.staff-layout .mapping-table-wrapper,
+.staff-layout .staff-students-table-wrapper {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+@media (max-width: 1250px) {
+  .staff-layout .staff-stats,
+  .staff-layout .staff-course-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .staff-layout .staff-sidebar {
+    width: 220px;
+  }
+
+  .staff-layout .staff-sidebar.collapsed {
+    left: -220px;
+  }
+
+  .staff-layout .staff-main,
+  .staff-layout .staff-main.expanded {
+    margin-left: 0;
+  }
+
+  .staff-layout .staff-header,
+  .staff-layout .staff-main.expanded .staff-header {
+    left: 0;
+    height: 80px;
+    padding: 20px 16px 0 70px;
+  }
+
+  .staff-layout .staff-menu-toggle {
+    left: 230px;
+    top: 23px;
+  }
+
+  .staff-layout .staff-main.expanded .staff-menu-toggle {
+    left: 16px;
+  }
+
+  .staff-layout .staff-page-content {
+    padding: 100px 16px 24px;
+  }
+
+  .staff-layout .staff-stats,
+  .staff-layout .staff-course-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .staff-layout .staff-stats {
+    margin-bottom: 22px;
+  }
+
+  .staff-layout .staff-stat-card {
+    min-height: 145px;
+    padding: 20px;
+  }
+
+  .staff-layout .staff-dashboard-section {
+    padding: 18px;
+  }
+
+  .staff-layout .staff-header-user {
+    font-size: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .staff-layout .staff-sidebar,
+  .staff-layout .staff-main,
+  .staff-layout .staff-header,
+  .staff-layout .staff-menu-toggle {
+    transition: none;
+  }
+}
+
+[data-skillhub-theme="dark"] .staff-layout {
+  background: #0f172a;
+  color: #f8fafc;
+}
+
+[data-skillhub-theme="dark"] .staff-layout .staff-main,
+[data-skillhub-theme="dark"] .staff-layout .staff-header {
+  background: #0f172a;
+}
+
+[data-skillhub-theme="dark"] .staff-layout .staff-header-user,
+[data-skillhub-theme="dark"] .staff-layout .staff-page-heading h1,
+[data-skillhub-theme="dark"] .staff-layout .staff-section-heading h2 {
+  color: #f8fafc;
+}
+
+[data-skillhub-theme="dark"] .staff-layout .staff-dashboard-section,
+[data-skillhub-theme="dark"] .staff-layout .staff-course-card {
+  background: #17233b;
+  border-color: #334155;
+}
+
+[data-skillhub-theme="dark"] .staff-layout .staff-course-info h3 {
+  color: #f8fafc;
+}

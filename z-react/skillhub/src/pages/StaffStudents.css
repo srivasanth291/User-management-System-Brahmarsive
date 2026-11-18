@@ -1,0 +1,257 @@
+
+.staff-students-page {
+  width: 100%;
+  min-width: 0;
+  color: #111827;
+}
+
+.staff-students-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.staff-students-header h2 {
+  margin: 0 0 8px;
+  font-size: 23px;
+}
+
+.staff-students-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.staff-students-header button {
+  position: static;
+  padding: 11px 18px;
+  border: none;
+  border-radius: 8px;
+  background: #002e83;
+  color: white;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.staff-students-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 25px;
+}
+
+.staff-students-summary > div {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 22px;
+}
+
+.staff-students-summary span {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.staff-students-summary h3 {
+  margin: 12px 0 0;
+  color: #071b49;
+  font-size: 28px;
+}
+
+.staff-students-panel {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 24px;
+}
+
+.staff-students-filters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.staff-students-filters h3 {
+  margin: 0;
+  color: #111827;
+  font-size: 17px;
+}
+
+.staff-students-filters input {
+  width: 260px;
+  height: 40px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 22px;
+  background: #deb9f7;
+  color: #222;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.staff-students-filters input::placeholder {
+  color: #756680;
+}
+
+.staff-student-message {
+  font-size: 13px;
+  color: #2563eb;
+  margin-bottom: 15px;
+}
+
+.staff-students-table-wrapper {
+  overflow-x: auto;
+}
+
+.staff-students-table {
+  width: 100%;
+  min-width: 650px;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+.staff-students-table th {
+  padding: 14px;
+  background: #f1f5f9;
+  color: #334155;
+  font-weight: 600;
+}
+
+.staff-students-table td {
+  padding: 15px 14px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #475569;
+}
+
+.staff-students-table tbody tr:nth-child(even) {
+  background: #f0f7ff;
+}
+
+.staff-student-status {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: #e0e7ff;
+  color: #1d4ed8;
+  font-size: 12px;
+}
+
+.staff-students-empty {
+  text-align: center;
+  padding: 30px !important;
+}
+
+.staff-student-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  background: rgba(7, 16, 54, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+  box-sizing: border-box;
+}
+
+.staff-student-modal {
+  width: 100%;
+  max-width: 450px;
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-sizing: border-box;
+}
+
+.staff-student-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 25px;
+}
+
+.staff-student-modal-header h3 {
+  margin: 0;
+  color: #111827;
+  font-size: 19px;
+}
+
+.staff-student-modal-header button {
+  position: static;
+  border: none;
+  background: transparent;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+.staff-student-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.staff-student-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.staff-student-field input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 7px;
+  color: #111827;
+  box-sizing: border-box;
+}
+
+.staff-student-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.staff-student-modal-actions button {
+  position: static;
+  padding: 10px 16px;
+  background: #002e83;
+  border: none;
+  border-radius: 7px;
+  color: white;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.staff-student-modal-actions .cancel-btn {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+@media (max-width: 700px) {
+  .staff-students-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .staff-students-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .staff-students-panel {
+    padding: 15px;
+  }
+
+  .staff-students-filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .staff-students-filters input {
+    width: 100%;
+  }
+}
