@@ -1,6 +1,42 @@
-from fastapi import FastAPI
+
+from fastapi import FastAPI, Depends
+
+from shared.models.user import User
+
+from fastapi_app.dependencies import (
+    get_current_user,
+    require_roles
+)
+
+from fastapi_app.routes.courses import (
+    router as courses_router
+)
+
+from fastapi_app.routes.learning import (
+    router as learning_router
+)
+
+from fastapi_app.routes.progress import (
+    router as progress_router
+)
+
+from fastapi_app.routes.users import (
+    router as users_router
+)
+
+from fastapi_app.routes.invitations import (
+    router as invitations_router
+)
+
 
 app = FastAPI(title="SkillHub FastAPI")
+
+app.include_router(courses_router)
+app.include_router(learning_router)
+app.include_router(progress_router)
+app.include_router(users_router)
+app.include_router(invitations_router)
+
 
 @app.get("/")
 def home():
@@ -8,20 +44,30 @@ def home():
         "message": "SkillHub FastAPI Backend Running"
     }
 
-@app.get("/api/courses")
-def get_courses():
+
+@app.get("/api/auth/me")
+def fastapi_current_user(
+    user: User = Depends(get_current_user)
+):
     return {
-        "courses": [
-            {
-                "id": 1,
-                "title": "Python Basics",
-                "category": "Python"
-            },
-            {
-                "id": 2,
-                "title": "Web Development",
-                "category": "Web Development"
-            }
-        ]
-    }         
-    
+        "message": "FastAPI authentication successful",
+        "user": {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "role": user.role.value
+        }
+    }
+
+
+@app.post("/api/courses/test-create")
+def test_create_course(
+    user: User = Depends(
+        require_roles("admin", "staff")
+    )
+):
+    return {
+        "message": "Course creation permitted",
+        "created_by": user.name,
+        "role": user.role.value
+    }

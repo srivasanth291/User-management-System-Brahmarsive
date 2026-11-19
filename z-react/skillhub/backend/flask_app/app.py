@@ -1,6 +1,11 @@
 from flask import Flask, jsonify
-
+from flask_app.routes.auth import auth_bp
+from shared.security import verify_password, create_access_token
 app = Flask(__name__)
+app.register_blueprint(
+    auth_bp,
+    url_prefix="/api/auth"
+)
 
 @app.route("/", methods=["GET"])
 def home():
