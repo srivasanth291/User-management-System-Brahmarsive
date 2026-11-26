@@ -1,9 +1,9 @@
 
 import { useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import { useUsers } from "../context/UserContext";
+import { useAuth } from "../context/useAuth";
+import { useUsers } from "../context/useUsers";
 import { useAppSelector } from "../store/hooks";
-import { useCourseMappings } from "../context/CourseMappingContext";
+import { useCourseMappings } from "../context/useCourseMappings";
 import "./StaffStudents.css";
 
 function StaffStudents() {
@@ -26,12 +26,7 @@ function StaffStudents() {
 
   const permissions = staffRecord?.permissions || [];
 
-  const canAddStudent = Array.isArray(permissions)
-    ? permissions.some((permission) =>
-        ["Add Student", "Manage Users"].includes(permission)
-      )
-    : permissions.addStudent === true ||
-      permissions.manageUsers === true;
+  const canAddStudent = permissions.includes("add_student");
 
   const myCourses = courses.filter(
     (course) =>
@@ -235,7 +230,10 @@ function StaffStudents() {
                       <td>
                         {assignedCourses.length > 0
                           ? assignedCourses
-                              .map((course) => course.title)
+                              .map(course => {
+                                const mapping = mappings.find(item => String(item.courseId) === String(course.id) && String(item.studentId) === String(student.id));
+                                return mapping?.progress == null ? course.title : `${course.title} (${mapping.progress}%)`;
+                              })
                               .join(", ")
                           : "Not assigned"}
                       </td>

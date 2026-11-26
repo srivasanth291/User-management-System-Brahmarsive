@@ -1,7 +1,7 @@
 
 import { useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import { useUsers } from "../context/UserContext";
+import { useAuth } from "../context/useAuth";
+import { useUsers } from "../context/useUsers";
 import "./AdminPreferences.css";
 
 function StudentProfile() {
@@ -51,7 +51,7 @@ function StudentProfile() {
     setMessage("");
   }
 
-  function handleSave(event) {
+  async function handleSave(event) {
     event.preventDefault();
 
     if (!user || !currentUser) return;
@@ -87,13 +87,12 @@ function StudentProfile() {
     }
 
     const details = {
-      ...user,
       name,
       email,
       phone,
     };
 
-    updateUser(currentUser.id, details);
+    try { await updateUser(currentUser.id, details); } catch (error) { setMessage(error.message); return; }
 
     setCurrentUser((previous) => ({
       ...previous,

@@ -6,6 +6,7 @@ function ModuleBuilder({ initialModule, onSave, onBack, onDraftChange }) {
     videoTitle: "",
     videoUrl: "",
     blogText: "",
+    ...initialModule,
   });
 
 function handleChange(event) {

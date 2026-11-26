@@ -1,8 +1,8 @@
 
 import { useState } from "react";
-import { useUsers } from "../context/UserContext";
+import { useUsers } from "../context/useUsers";
 import { useAppSelector } from "../store/hooks";
-import { useCourseMappings } from "../context/CourseMappingContext";
+import { useCourseMappings } from "../context/useCourseMappings";
 import "./AdminCourseMapping.css";
 
 function AdminCourseMapping() {

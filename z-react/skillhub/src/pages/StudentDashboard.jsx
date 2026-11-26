@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 import { useAppSelector } from "../store/hooks";
-import { useCourseMappings } from "../context/CourseMappingContext";
+import { useCourseMappings } from "../context/useCourseMappings";
 import "./AdminDashoard.css";
 import "./StudentDashboard.css";
 import {
@@ -18,30 +18,21 @@ function StudentDashboard() {
 
   const studentId = String(currentUser?.id ?? "");
 
-  const assignedCourseIds = new Set(
-    mappings
-      .filter((mapping) => String(mapping.studentId) === studentId)
-      .map((mapping) => String(mapping.courseId)),
-  );
-
-  const assignedCourses = courses.filter((course) =>
-    assignedCourseIds.has(String(course.id)),
-  );
+  const assignedCourses = useMemo(() => {
+    const ids = new Set(mappings.filter(mapping => String(mapping.studentId) === studentId)
+      .map(mapping => String(mapping.courseId)));
+    return courses.filter(course => ids.has(String(course.id)));
+  }, [courses, mappings, studentId]);
 
   const [, refresh] = useState(0);
-  const assignedKey = assignedCourses.map(c => c.id).join(",");
   useEffect(() => {
     let active = true;
-    refreshStudentProgress(assignedCourses).then(() => { if(active) refresh(v=>v+1); });
+    refreshStudentProgress(studentId, assignedCourses).then(() => { if(active) refresh(v=>v+1); });
     return () => { active = false; };
-  }, [assignedKey]);
+  }, [studentId, assignedCourses]);
 
   const totalCourses = assignedCourses.length;
 
-  const totalModules = assignedCourses.reduce(
-    (total, course) => total + (course.modules?.length || 0),
-    0,
-  );
   const completedCourses = assignedCourses.filter(
     (course) => getStudentProgress(studentId, course).completed,
   ).length;
@@ -53,22 +44,10 @@ function StudentDashboard() {
 
   const overallProgress = getOverallProgress(studentId, assignedCourses);
 
-  const recentCourses = assignedCourses.slice(-4).reverse();
+  const recentCourses = assignedCourses.slice(0, 4);
 
   function openCourse(courseId) {
     navigate(`/student/courses/${courseId}`);
-  }
-
-  function startLearning() {
-    const nextCourse = assignedCourses.find(
-      (course) => !getStudentProgress(studentId, course).completed,
-    );
-
-    if (nextCourse) {
-      navigate(`/student/courses/${nextCourse.id}`);
-    } else {
-      navigate("/student/courses");
-    }
   }
 
   return (

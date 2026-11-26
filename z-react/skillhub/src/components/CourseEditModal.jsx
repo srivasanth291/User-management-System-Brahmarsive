@@ -167,7 +167,7 @@ function CourseEditModal({ course, staffUsers, onSave, onClose }) {
     event.target.value = "";
   }
 
-  function handleSave(event) {
+  async function handleSave(event) {
     event.preventDefault();
 
     if (
@@ -207,10 +207,10 @@ function CourseEditModal({ course, staffUsers, onSave, onClose }) {
       for (const quiz of module.quizzes) {
         if (
           !quiz.question?.trim() ||
-          !["A", "B", "C"].every(
+          !Object.keys(quiz.options).every(
             (option) => quiz.options?.[option]?.trim()
           ) ||
-          !["A", "B", "C"].includes(quiz.correct)
+          !Object.keys(quiz.options).includes(quiz.correct)
         ) {
           alert("Please complete all quiz questions and answers.");
           return;
@@ -218,11 +218,11 @@ function CourseEditModal({ course, staffUsers, onSave, onClose }) {
       }
     }
 
-    onSave({
-      ...form,
-      instructorId: selectedInstructor.id,
-      instructor: selectedInstructor.name,
-    });
+    try {
+      await onSave({ ...form, instructorId: selectedInstructor.id, instructor: selectedInstructor.name });
+    } catch (error) {
+      alert(error.message || "Unable to save course changes.");
+    }
   }
 
   return (
@@ -404,7 +404,7 @@ function CourseEditModal({ course, staffUsers, onSave, onClose }) {
                       />
                     </div>
 
-                    {["A", "B", "C"].map((option) => (
+                    {Object.keys(quiz.options).map((option) => (
                       <div className="form-group" key={option}>
                         <label>Option {option}</label>
                         <input
@@ -435,9 +435,7 @@ function CourseEditModal({ course, staffUsers, onSave, onClose }) {
                           )
                         }
                       >
-                        <option value="A">Option A</option>
-                        <option value="B">Option B</option>
-                        <option value="C">Option C</option>
+                        {Object.keys(quiz.options).map(key => <option key={key} value={key}>Option {key}</option>)}
                       </select>
                     </div>
                   </div>

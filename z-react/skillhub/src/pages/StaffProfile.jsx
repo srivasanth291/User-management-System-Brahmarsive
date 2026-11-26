@@ -1,7 +1,7 @@
 
-import { useEffect, useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import { useUsers } from "../context/UserContext";
+import { useState } from "react";
+import { useAuth } from "../context/useAuth";
+import { useUsers } from "../context/useUsers";
 import "./AdminPreferences.css";
 
 function StaffProfile() {
@@ -22,16 +22,6 @@ function StaffProfile() {
     email: "",
     phone: "",
   });
-
-  useEffect(() => {
-    if (!staff || editing) return;
-
-    setForm({
-      name: staff.name || "",
-      email: staff.email || "",
-      phone: staff.phone || "",
-    });
-  }, [staff, editing]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -60,7 +50,7 @@ function StaffProfile() {
     setMessage("");
   }
 
-  function handleSave(event) {
+  async function handleSave(event) {
     event.preventDefault();
 
     if (!staff || !currentUser) {
@@ -99,13 +89,12 @@ function StaffProfile() {
     }
 
     const details = {
-      ...staff,
       name,
       email,
       phone,
     };
 
-    updateUser(staff.id, details);
+    try { await updateUser(staff.id, details); } catch (error) { setMessage(error.message); return; }
 
     setCurrentUser((previous) => ({
       ...previous,

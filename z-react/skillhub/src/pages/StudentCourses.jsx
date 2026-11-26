@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 import { useAppSelector } from "../store/hooks";
-import { useCourseMappings } from "../context/CourseMappingContext";
+import { useCourseMappings } from "../context/useCourseMappings";
 import { getStudentProgress, refreshStudentProgress } from "../utils/studentProgress";
 import "./AdminCourses.css";
 import "./StudentCourses.css";
@@ -17,23 +17,18 @@ function StudentCourses() {
 
   const studentId = String(currentUser?.id ?? "");
 
-  const assignedIds = new Set(
-    mappings
-      .filter((mapping) => String(mapping.studentId) === studentId)
-      .map((mapping) => String(mapping.courseId)),
-  );
-
-  const myCourses = courses.filter((course) =>
-    assignedIds.has(String(course.id)),
-  );
+  const myCourses = useMemo(() => {
+    const ids = new Set(mappings.filter(mapping => String(mapping.studentId) === studentId)
+      .map(mapping => String(mapping.courseId)));
+    return courses.filter(course => ids.has(String(course.id)));
+  }, [courses, mappings, studentId]);
 
   const [, refresh] = useState(0);
-  const assignedKey = myCourses.map(c => c.id).join(",");
   useEffect(() => {
     let active = true;
-    refreshStudentProgress(myCourses).then(() => { if(active) refresh(v=>v+1); });
+    refreshStudentProgress(studentId, myCourses).then(() => { if(active) refresh(v=>v+1); });
     return () => { active = false; };
-  }, [assignedKey]);
+  }, [studentId, myCourses]);
 
   const filteredCourses = myCourses.filter((course) =>
     course.title.toLowerCase().includes(search.toLowerCase()),
@@ -45,6 +40,7 @@ function StudentCourses() {
 
   return (
     <div className="admin-courses student-courses">
+      <input aria-label="Search assigned courses" placeholder="Search courses" value={search} onChange={event => setSearch(event.target.value)} />
       {filteredCourses.length > 0 ? (
         <div className="courses-grid">
           {filteredCourses.map((course) => {

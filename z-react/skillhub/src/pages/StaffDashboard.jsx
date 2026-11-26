@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 import { useAppSelector } from "../store/hooks";
-import { useCourseMappings } from "../context/CourseMappingContext";
+import { useCourseMappings } from "../context/useCourseMappings";
 import "./StaffDashboard.css";
 
 function StaffDashboard() {
@@ -40,7 +40,7 @@ function StaffDashboard() {
     myMappings.map((mapping) => String(mapping.studentId))
   ).size;
 
-  const recentCourses = myCourses.slice(-4).reverse();
+  const recentCourses = myCourses.slice(0, 4);
 
   return (
     <div className="staff-dashboard">

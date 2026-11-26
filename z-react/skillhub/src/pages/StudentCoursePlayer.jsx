@@ -1,9 +1,9 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 import { useAppSelector } from "../store/hooks";
-import { useCourseMappings } from "../context/CourseMappingContext";
+import { useCourseMappings } from "../context/useCourseMappings";
 import "./StudentCoursePlayer.css";
 import { api, postJson } from "../api/client";
 
@@ -14,6 +14,7 @@ function getVideoUrl(url) {
 
   try {
     const parsed = new URL(url);
+    if (!["https:", "http:"].includes(parsed.protocol)) return "";
     const host = parsed.hostname.toLowerCase();
 
     if (host === "youtu.be" || host === "www.youtu.be") {
@@ -65,6 +66,10 @@ function getVideoUrl(url) {
 
 function StudentCoursePlayer() {
   const { courseId } = useParams();
+  return <CoursePlayer key={courseId} courseId={courseId} />;
+}
+
+function CoursePlayer({ courseId }) {
   const navigate = useNavigate();
 
   const { currentUser } = useAuth();
@@ -110,6 +115,8 @@ function StudentCoursePlayer() {
   );
 
   const selectedModule = modules[selectedIndex];
+  const videoUrl = getVideoUrl(selectedModule?.videoUrl);
+  const embed = /^https?:\/\/(?:www\.)?(?:youtube\.com\/embed\/|player\.vimeo\.com\/video\/)/.test(videoUrl);
   const quizzes = selectedModule?.quizzes || [];
 
   const answers =
@@ -137,21 +144,6 @@ function StudentCoursePlayer() {
     completedModules.includes(selectedIndex);
 
   useEffect(() => {
-    setProgressState({
-      key: storageKey,
-      data: emptyProgress(),
-    });
-
-    setAnswersState({
-      key: storageKey,
-      moduleIndex: 0,
-      answers: {},
-    });
-
-    setQuizResult(null);
-  }, [storageKey]);
-
-  useEffect(() => {
     if (!isAssigned || !course) return;
     let active = true;
     api(`/api/courses/${courseId}/progress`).then(result => {
@@ -163,7 +155,7 @@ function StudentCoursePlayer() {
       }}));
     }).catch(error => { if (active) setQuizResult({message:error.message,error:true}); });
     return () => { active = false; };
-  }, [courseId, isAssigned, course?.id, storageKey]);
+  }, [courseId, isAssigned, course, storageKey]);
 
   function updateProgress(updater) {
     setProgressState((previous) => {
@@ -319,11 +311,10 @@ function StudentCoursePlayer() {
               </p>
 
               <div className="student-video-container">
-                {selectedModule.videoUrl &&
-                getVideoUrl(selectedModule.videoUrl) ? (
+                {embed ? (
                   <iframe
                     key={`${courseId}-${selectedIndex}`}
-                    src={getVideoUrl(selectedModule.videoUrl)}
+                    src={videoUrl}
                     title={
                       selectedModule.videoTitle || "Lesson Video"
                     }
@@ -331,6 +322,8 @@ function StudentCoursePlayer() {
                     allowFullScreen
                     referrerPolicy="strict-origin-when-cross-origin"
                   />
+                ) : videoUrl ? (
+                  <video src={videoUrl} controls preload="metadata" />
                 ) : (
                   <p>No lesson video available.</p>
                 )}

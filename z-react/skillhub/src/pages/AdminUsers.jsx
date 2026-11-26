@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useUsers } from "../context/UserContext";
+import { useUsers } from "../context/useUsers";
 import "./AdminUsers.css";
 
 const initialForm = {
@@ -38,21 +38,12 @@ function AdminUsers() {
   const [activeTab, setActiveTab] = useState("Active");
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("All");
-  const [modal, setModal] = useState("");
+  const [selectedModal, setModal] = useState("");
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(initialForm);
 
-  useEffect(() => {
-    if (searchParams.get("add") === "true") {
-      setForm({ ...initialForm, permissions: [] });
-      setEditingId(null);
-      setModal("invite");
-
-      const next = new URLSearchParams(searchParams);
-      next.delete("add");
-      setSearchParams(next, { replace: true });
-    }
-  }, [searchParams, setSearchParams]);
+  const inviteRequested = searchParams.get("add") === "true";
+  const modal = inviteRequested ? "invite" : selectedModal;
 
   const filteredUsers = useMemo(() => {
     const keyword = search.trim().toLowerCase();
@@ -99,6 +90,11 @@ function AdminUsers() {
   }
 
   function closeModal() {
+    if (inviteRequested) {
+      const next = new URLSearchParams(searchParams);
+      next.delete("add");
+      setSearchParams(next, { replace: true });
+    }
     setModal("");
     setEditingId(null);
     setForm({ ...initialForm, permissions: [] });
@@ -120,28 +116,6 @@ function AdminUsers() {
         ? previous.permissions.filter((p) => p !== permission)
         : [...previous.permissions, permission],
     }));
-  }
-
-  function openGmailInvite(user) {
-    const inviteLink = `${window.location.origin}/set-password?token=${user.inviteToken}`;
-
-    const subject = "SkillHub - Account Invitation";
-
-    const body =
-      `Hi ${user.name},\n\n` +
-      `You have been invited to join SkillHub.\n\n` +
-      `Please open this link to set your password:\n` +
-      `${inviteLink}\n\n` +
-      `After setting your password, you can log in.\n\n` +
-      `SkillHub Team`;
-
-    const gmailUrl =
-      "https://mail.google.com/mail/?view=cm&fs=1" +
-      `&to=${encodeURIComponent(user.email)}` +
-      `&su=${encodeURIComponent(subject)}` +
-      `&body=${encodeURIComponent(body)}`;
-
-    window.open(gmailUrl, "_blank", "noopener,noreferrer");
   }
 
   async function handleInvite(event) {
@@ -442,7 +416,7 @@ function AdminUsers() {
                 </select>
               </label>
 
-              {form.role === "staff" && (
+              {modal === "edit" && form.role === "staff" && (
                 <fieldset className="users-staff-permissions">
                   <legend>Staff Permissions</legend>
 

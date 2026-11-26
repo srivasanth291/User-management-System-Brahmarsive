@@ -1,13 +1,13 @@
 import "./sidebar.css";
 import { useNavigate ,NavLink } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 
 function Sidebar({ open, togglemenu }) {
     const navigate = useNavigate();
-    const { setCurrentUser } = useAuth();
+    const { logout } = useAuth();
 
     function handleLogout() {
-        setCurrentUser(null);
+        logout();
         navigate("/login", { replace: true });
     }
     return (

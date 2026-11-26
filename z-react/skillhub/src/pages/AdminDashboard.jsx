@@ -1,5 +1,5 @@
-import { useAuth } from "../context/AuthContext";
-import { useUsers } from "../context/UserContext";
+import { useAuth } from "../context/useAuth";
+import { useUsers } from "../context/useUsers";
 import { useAppSelector } from "../store/hooks";
 import { useNavigate } from "react-router-dom";
 import "./AdminDashoard.css";
@@ -30,13 +30,12 @@ function AdminDashboard() {
     (user) => user.role.toLowerCase() === "staff"
   ).length;
 
-  const totalUsers = registeredUsers.length;
 
   const totalStudents = registeredUsers.filter(
     (user) => user.role.toLowerCase() === "student"
   ).length;
 
-  const recentCourses = courses.slice(-4).reverse();
+  const recentCourses = courses.slice(0, 4);
 
   return (
     <div className="admin-dashboard">

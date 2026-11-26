@@ -1,8 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import { useUsers } from "../context/UserContext";
+import { useAuth } from "../context/useAuth";
 import { useAppDispatch } from "../store/hooks";
 import { addCourse } from "../store/slices/coursesSlice";
 import ModuleBuilder from "../components/ModuleBuilder";
@@ -42,20 +41,13 @@ function loadDraft(key) {
 function StaffCreateCourse() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  const { users } = useUsers();
   const dispatch = useAppDispatch();
 
   const staffId = String(currentUser?.id ?? "");
   const draftKey = `skillhub_staff_course_draft_${staffId}`;
 
-  const staff = users.find(
-    (user) => String(user.id) === staffId
-  );
-
-  // The server authorizes staff course creation by role; fine-grained
-  // permissions are not stored by the backend yet.
-  const isActiveStaff = currentUser?.role === "staff";
-  const canCreate = isActiveStaff;
+  const staff = currentUser;
+  const canCreate = currentUser?.role === "staff" && currentUser.permissions?.includes("create_course");
 
   const [savedDraft] = useState(() => loadDraft(draftKey));
 

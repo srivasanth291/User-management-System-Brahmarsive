@@ -6,7 +6,7 @@ import {
   addCourse,
   updateCourse,
 } from "../store/slices/coursesSlice";
-import { useUsers } from "../context/UserContext";
+import { useUsers } from "../context/useUsers";
 import ModuleBuilder from "../components/ModuleBuilder";
 import QuizBuilder from "../components/QuizzBuilder";
 import "./AdminCourses.css";

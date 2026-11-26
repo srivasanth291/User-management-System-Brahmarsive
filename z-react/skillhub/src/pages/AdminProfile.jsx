@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import { useUsers } from "../context/UserContext";
+import { useAuth } from "../context/useAuth";
+import { useUsers } from "../context/useUsers";
 import "./AdminPreferences.css";
 
 function AdminProfile() {
@@ -49,7 +49,7 @@ function AdminProfile() {
     setMessage("");
   }
 
-  function handleSave(event) {
+  async function handleSave(event) {
     event.preventDefault();
 
     const name = form.name.trim();
@@ -74,7 +74,7 @@ function AdminProfile() {
 
     const details = { name, email, phone };
 
-    updateOwnProfile(currentUser.id, details);
+    try { await updateOwnProfile(currentUser.id, details); } catch (error) { setMessage(error.message); return; }
 
     setCurrentUser((previous) => ({
       ...previous,

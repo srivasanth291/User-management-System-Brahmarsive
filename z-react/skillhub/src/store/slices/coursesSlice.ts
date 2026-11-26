@@ -7,13 +7,28 @@ const initialState: CoursesState = { items: [], loading: false, error: null };
 
 type ServerModule = { id: number; title: string; videoTitle: string; videoUrl: string; explanation: string; questions: Array<{id:number;question:string;options:Array<{id:number;text:string;isCorrect?:boolean}>}> };
 function fromServerModule(m: ServerModule): Module & {id:number} {
-  const keys = ['A','B','C'] as const;
-  return { id:m.id, moduleTitle:m.title, videoTitle:m.videoTitle, videoUrl:m.videoUrl, blogText:m.explanation,
-    quizzes:m.questions.map(q => ({id:q.id,question:q.question, options:Object.fromEntries(keys.map((key,i)=>[key,q.options[i]?.text || ''])) as {A:string;B:string;C:string}, optionIds:Object.fromEntries(keys.map((key,i)=>[key,q.options[i]?.id])), correct:(keys.find((_,i)=>q.options[i]?.isCorrect) || '') as 'A'|'B'|'C'|''})) } as Module & {id:number};
+  const quizzes = m.questions.map(question => {
+    const options = question.options.map((option, index) => ({
+      ...option, key: String.fromCharCode(65 + index)
+    }));
+    return {
+      id: question.id, question: question.question,
+      options: Object.fromEntries(options.map(option => [option.key, option.text])),
+      optionIds: Object.fromEntries(options.map(option => [option.key, option.id])),
+      correct: options.find(option => option.isCorrect)?.key || ''
+    };
+  });
+  return {id: m.id, moduleTitle: m.title, videoTitle: m.videoTitle,
+    videoUrl: m.videoUrl, blogText: m.explanation, quizzes};
 }
 function toServerModule(m: Module) {
-  return {title:m.moduleTitle,videoTitle:m.videoTitle,videoUrl:m.videoUrl,explanation:m.blogText,
-    questions:(m.quizzes || []).filter(q=>q.question?.trim()).map(q=>({question:q.question,options:(['A','B','C'] as const).map(k=>({text:q.options[k],isCorrect:q.correct===k}))}))};
+  return {
+    title: m.moduleTitle, videoTitle: m.videoTitle, videoUrl: m.videoUrl, explanation: m.blogText,
+    questions: (m.quizzes || []).filter(q => q.question?.trim()).map(q => ({
+      question: q.question,
+      options: Object.entries(q.options).map(([key, text]) => ({text, isCorrect: q.correct === key}))
+    }))
+  };
 }
 async function hydrate(course: Course): Promise<Course> {
   const result = await api(`/api/courses/${course.id}/modules`);
@@ -24,26 +39,28 @@ export const fetchCourses = createAsyncThunk('courses/fetch', async () => {
   return await Promise.all((result.courses || []).map((c:Course)=>hydrate(c)));
 });
 export const addCourse = createAsyncThunk('courses/add', async (course: Omit<Course,'id'>) => {
-  const result = await api('/api/courses',postJson({title:course.title,category:course.category,description:course.description,thumbnailUrl:course.thumbnailUrl,instructorId: course.instructorId}));
-  const id = result.course.id;
-  try {
-    for (const module of course.modules || []) await api(`/api/courses/${id}/modules`,postJson(toServerModule(module)));
-    await api(`/api/courses/${id}`,{method:'PATCH',body:JSON.stringify({status:'published'})});
-    return await hydrate({...result.course,status:'published'});
-  } catch (error) {
-    // A draft remains available for repair; never pretend the publish succeeded.
-    throw error;
-  }
+  const result = await api('/api/courses', postJson({
+    title: course.title, category: course.category, description: course.description,
+    thumbnailUrl: course.thumbnailUrl, instructorId: course.instructorId,
+    status: 'published', modules: course.modules.map(toServerModule)
+  }));
+  return hydrate(result.course);
 });
-export const updateCourse = createAsyncThunk('courses/update', async ({id,changes,updatedCourse}:{id:string|number;changes?:Partial<Course>;updatedCourse?:Partial<Course>}) => {
-  const patch = changes || updatedCourse || {};
-  const result = await api(`/api/courses/${id}`,{method:'PATCH',body:JSON.stringify(Object.fromEntries(Object.entries({title:patch.title,category:patch.category,description:patch.description,thumbnailUrl:patch.thumbnailUrl,...('instructorId' in patch? { instructorId: patch.instructorId }: {}),...('status' in patch ? {status:(patch as any).status}: {})}).filter(([,v])=>v!==undefined)))});
-  // Existing module editing must update server records rather than silently overwrite local state.
-  if (patch.modules) {
-    const existing = (await api(`/api/courses/${id}/modules`)).modules || [];
-    for (const module of existing) await api(`/api/modules/${module.id}`,{method:'DELETE'});
-    for (const module of patch.modules) await api(`/api/courses/${id}/modules`,postJson(toServerModule(module)));
-  }
+export const updateCourse = createAsyncThunk('courses/update', async ({id,changes,updatedCourse}:{id:string|number;changes?:Partial<Course>;updatedCourse?:Partial<Course>}, { getState }) => {
+  const {modules, title, category, description, thumbnailUrl, instructorId, status} = changes || updatedCourse || {};
+  const original = (getState() as { courses: CoursesState }).courses.items.find(course => String(course.id) === String(id));
+  if (modules && !original) throw new Error('Reload the course before editing');
+  const edits = modules?.flatMap(module => {
+    const previous = original?.modules.find(item => item.id === module.id);
+    const payload = toServerModule(module);
+    return previous && JSON.stringify(toServerModule(previous)) === JSON.stringify(payload)
+      ? [] : [{id: module.id, ...payload}];
+  });
+  const removed = modules && original?.modules.flatMap(item =>
+    item.id && !modules.some(module => module.id === item.id) ? [item.id] : []);
+  const result = await api(`/api/courses/${id}`, {method:'PATCH',body:JSON.stringify({
+    title, category, description, thumbnailUrl, instructorId, status, moduleEdits: edits, removedModuleIds: removed
+  })});
   return await hydrate(result.course);
 });
 export const deleteCourse = createAsyncThunk('courses/delete',async (id:string|number)=>{await api(`/api/courses/${id}`,{method:'DELETE'});return String(id);});

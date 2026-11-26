@@ -1,5 +1,5 @@
-const AUTH_URL = import.meta.env.VITE_AUTH_API_URL || "http://127.0.0.1:5000";
-const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+const AUTH_URL = import.meta.env?.VITE_AUTH_API_URL || "http://127.0.0.1:5000";
+const API_URL = import.meta.env?.VITE_API_URL || "http://127.0.0.1:8000";
 
 async function request(base, path, options = {}) {
   const token = sessionStorage.getItem("skillhub_access_token");
@@ -12,8 +12,13 @@ async function request(base, path, options = {}) {
     throw new Error("Cannot connect to the server. Check that the backend is running.");
   }
   const data = await response.json().catch(() => ({}));
-  if (response.status === 401) window.dispatchEvent(new Event("skillhub-session-expired"));
-  if (!response.ok) throw new Error(data.detail || data.message || `Request failed (${response.status})`);
+  if (response.status === 401 && token && token === sessionStorage.getItem("skillhub_access_token")) window.dispatchEvent(new Event("skillhub-session-expired"));
+  if (!response.ok) {
+    const detail = Array.isArray(data.detail)
+      ? data.detail.map(issue => issue.msg).join(". ")
+      : data.detail;
+    throw new Error(detail || data.message || `Request failed (${response.status})`);
+  }
   return data;
 }
 export const authApi = (path, options) => request(AUTH_URL, path, options);

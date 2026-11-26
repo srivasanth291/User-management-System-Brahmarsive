@@ -6,7 +6,7 @@ import { CourseMappingProvider } from "./context/CourseMappingContext";
 import { Provider } from "react-redux";
 import { store } from "./store";
 import { fetchCourses, clearCourses } from "./store/slices/coursesSlice";
-window.addEventListener("skillhub-auth-change", () => { store.dispatch(fetchCourses()); });
+window.addEventListener("skillhub-auth-change", () => { store.dispatch(sessionStorage.getItem("skillhub_access_token") ? fetchCourses() : clearCourses()); });
 window.addEventListener("skillhub-session-expired", () => { store.dispatch(clearCourses()); });
 if (sessionStorage.getItem("skillhub_access_token")) store.dispatch(fetchCourses());
 import { AuthProvider } from "./context/AuthContext";

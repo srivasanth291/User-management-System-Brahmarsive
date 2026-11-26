@@ -6,11 +6,11 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 import "./StudentLayout.css";
 
 function StudentLayout() {
-  const { currentUser, setCurrentUser } = useAuth();
+  const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -34,7 +34,7 @@ function StudentLayout() {
     : pageTitles[location.pathname] || "SkillHub";
 
   function handleLogout() {
-    setCurrentUser(null);
+    logout();
     navigate("/login", { replace: true });
   }
 

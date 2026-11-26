@@ -1,28 +1,36 @@
-import { createContext, useContext, useEffect, useState, useCallback } from "react";
-import { useAuth } from "./AuthContext";
+import { useEffect, useState, useCallback } from "react";
+import { useAuth } from "./useAuth";
 import { api, postJson } from "../api/client";
 import { useAppSelector } from "../store/hooks";
-const CourseMappingContext = createContext(null);
+import { CourseMappingContext } from "./useCourseMappings";
 export function CourseMappingProvider({ children }) {
   const { currentUser } = useAuth();
+  return <MappingState key={currentUser?.id} currentUser={currentUser}>{children}</MappingState>;
+}
+function MappingState({ currentUser, children }) {
   const courses = useAppSelector(state => state.courses.items);
   const [mappings, setMappings] = useState([]);
-  const refreshMappings = useCallback(async () => {
-    if (!currentUser) { setMappings([]); return; }
+  const loadMappings = useCallback(async () => {
+    if (!currentUser) return [];
     if (currentUser.role === "student") {
       const result = await api("/api/students/me/courses");
-      setMappings((result.courses || []).map(course => ({ id: `student-${course.id}`, studentId: String(currentUser.id), courseId: String(course.id) })));
-      return;
+      return (result.courses || []).map(course => ({ id: `student-${course.id}`, studentId: String(currentUser.id), courseId: String(course.id) }));
     }
+    if (currentUser.role === "staff" && !currentUser.permissions?.includes("view_students")) return [];
     const responses = await Promise.all(courses.filter(c => Number.isInteger(Number(c.id))).map(async course => {
       try {
         const result = await api(`/api/courses/${course.id}/enrollments`);
-        return (result.students || []).map(student => ({ id: student.enrollmentId, studentId: String(student.id), courseId: String(course.id), assignedAt: null }));
+        return (result.students || []).map(student => ({ id: student.enrollmentId, studentId: String(student.id), courseId: String(course.id), assignedAt: null, progress: student.progressPercentage }));
       } catch (error) { console.error(error); return []; }
     }));
-    setMappings(responses.flat());
-  }, [currentUser?.id, currentUser?.role, courses]);
-  useEffect(() => { refreshMappings().catch(console.error); }, [refreshMappings]);
+    return responses.flat();
+  }, [currentUser, courses]);
+  useEffect(() => {
+    let active = true;
+    loadMappings().then(rows => { if (active) setMappings(rows); }).catch(console.error);
+    return () => { active = false; };
+  }, [loadMappings]);
+  async function refreshMappings() { setMappings(await loadMappings()); }
   async function assignCourse(studentId, courseId) {
     try {
       await api(`/api/courses/${courseId}/enrollments`, postJson({ studentId: Number(studentId) }));
@@ -40,9 +48,4 @@ export function CourseMappingProvider({ children }) {
     } catch (error) { return { ok: false, message: error.message }; }
   }
   return <CourseMappingContext.Provider value={{ mappings, assignCourse, unassignCourse, refreshMappings }}>{children}</CourseMappingContext.Provider>;
-}
-export function useCourseMappings() {
-  const value = useContext(CourseMappingContext);
-  if (!value) throw new Error("useCourseMappings must be used inside CourseMappingProvider");
-  return value;
 }

@@ -1,14 +1,14 @@
 
 import { api } from "../api/client";
 const progressCache = new Map();
-export async function refreshStudentProgress(courses) {
+export async function refreshStudentProgress(studentId, courses) {
   await Promise.all((courses || []).map(async course => {
-    try { progressCache.set(String(course.id), await api(`/api/courses/${course.id}/progress`)); }
-    catch { progressCache.delete(String(course.id)); }
+    try { progressCache.set(`${studentId}:${course.id}`, await api(`/api/courses/${course.id}/progress`)); }
+    catch { progressCache.delete(`${studentId}:${course.id}`); }
   }));
 }
 export function getStudentProgress(studentId, course) {
-  const server = progressCache.get(String(course.id));
+  const server = progressCache.get(`${studentId}:${course.id}`);
   const saved = {
     completedModules: (server?.modules || []).flatMap((m, index) => m.completed ? [index] : []),
     selectedModule: 0
@@ -38,8 +38,7 @@ export function getStudentProgress(studentId, course) {
       : 0;
 
   const started =
-    completedCount > 0 ||
-    saved.selectedModule !== undefined;
+    completedCount > 0;
 
   return {
     totalModules,

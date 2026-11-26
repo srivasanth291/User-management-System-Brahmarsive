@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import { useUsers } from "../context/UserContext";
+import { useAuth } from "../context/useAuth";
+import { useUsers } from "../context/useUsers";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { updateCourse } from "../store/slices/coursesSlice";
 import CourseViewModal from "../components/CourseViewModal";
@@ -26,10 +26,8 @@ function StaffCourses() {
 
   const staff = users.find((user) => String(user.id) === staffId);
 
-  // The server authorizes staff course creation by role; fine-grained
-  // permissions are not stored by the backend yet.
   const isActiveStaff = currentUser?.role === "staff";
-  const canCreate = isActiveStaff;
+  const canCreate = isActiveStaff && currentUser.permissions?.includes("create_course");
 
   function isOwnCourse(course) {
     return isActiveStaff && String(course.createdBy ?? "") === staffId;

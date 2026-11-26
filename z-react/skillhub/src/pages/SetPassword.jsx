@@ -5,18 +5,22 @@ import "./Login.css";
 
 export default function SetPassword() {
   const [params] = useSearchParams();
-  const navigate = useNavigate();
   const token = params.get("token");
+  return <RegistrationForm key={token} token={token} />;
+}
+
+function RegistrationForm({ token }) {
+  const navigate = useNavigate();
   const [invitation, setInvitation] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(Boolean(token));
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(token ? "" : "Invitation token is missing.");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (!token) { setError("Invitation token is missing."); setLoading(false); return; }
+    if (!token) return;
     api(`/api/invitations/verify?token=${encodeURIComponent(token)}`)
       .then(setInvitation).catch((err) => setError(err.message)).finally(() => setLoading(false));
   }, [token]);

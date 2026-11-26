@@ -132,7 +132,8 @@
   color: white;
 }
 
-.student-video-container iframe {
+.student-video-container iframe,
+.student-video-container video {
   width: 100%;
   height: 100%;
   border: none;

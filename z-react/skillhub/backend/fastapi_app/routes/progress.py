@@ -18,6 +18,7 @@ from fastapi_app.dependencies import (
     get_current_user,
     require_roles,
     check_permission,
+    has_permission,
 )
 
 router = APIRouter(
@@ -189,13 +190,24 @@ def list_enrollments(
         .where(Enrollment.course_id == course_id)
     ).all()
 
+    progress = {}
+    if has_permission(user, "view_progress"):
+        total = db.scalar(select(func.count(Module.id)).where(Module.course_id == course_id))
+        completed = dict(db.execute(select(ModuleProgress.student_id, func.count(ModuleProgress.id))
+            .join(Module, Module.id == ModuleProgress.module_id)
+            .where(Module.course_id == course_id, ModuleProgress.completed.is_(True))
+            .group_by(ModuleProgress.student_id)).all())
+        progress = {student.id: round(100 * completed.get(student.id, 0) / total) if total else 0
+                    for _, student in rows}
+
     return {
         "students": [
             {
                 "id": student.id,
                 "name": student.name,
                 "email": student.email,
-                "enrollmentId": enrollment.id
+                "enrollmentId": enrollment.id,
+                **({"progressPercentage": progress[student.id]} if student.id in progress else {})
             }
             for enrollment, student in rows
         ]

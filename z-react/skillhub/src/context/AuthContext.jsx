@@ -1,7 +1,7 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { api, authApi, postJson } from "../api/client";
+import { useEffect, useState } from "react";
+import { authApi, postJson } from "../api/client";
 
-const AuthContext = createContext(null);
+import { AuthContext } from "./useAuth";
 const USER_KEY = "skillhub_current_user";
 const TOKEN_KEY = "skillhub_access_token";
 
@@ -71,10 +71,4 @@ export function AuthProvider({ children }) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth() {
-  const value = useContext(AuthContext);
-  if (!value) throw new Error("useAuth must be used inside AuthProvider");
-  return value;
 }

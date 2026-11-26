@@ -7,12 +7,12 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 import "./StaffLayout.css";
 import "./StaffHeader.css";
 
 function StaffLayout() {
-  const { currentUser, setCurrentUser } = useAuth();
+  const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -53,7 +53,7 @@ function StaffLayout() {
   }
 
   function handleLogout() {
-    setCurrentUser(null);
+    logout();
     navigate("/login", { replace: true });
   }
 

@@ -30,11 +30,12 @@ export type SafeUser = Omit<User, "password" | "inviteToken">;
 
 export interface QuizQuestion {
   question: string;
-  options: { A: string; B: string; C: string };
-  correct: "A" | "B" | "C" | "";
+  options: Record<string, string>;
+  correct: string;
 }
 
 export interface Module {
+  id?: number;
   moduleTitle: string;
   videoTitle: string;
   videoUrl: string;
@@ -43,6 +44,7 @@ export interface Module {
 }
 
 export interface Course {
+  status?: "draft" | "published" | "archived";
   id: string;
   title: string;
   category: string;

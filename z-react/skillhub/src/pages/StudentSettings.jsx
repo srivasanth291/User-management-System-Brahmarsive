@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/useAuth";
 import "./AdminPreferences.css";
 
 const defaultNotifications = {
@@ -11,6 +11,10 @@ const defaultNotifications = {
 function StudentSettings() {
   const { currentUser } = useAuth();
   const studentId = String(currentUser?.id ?? "");
+  return <StudentPreferences key={studentId} studentId={studentId} />;
+}
+
+function StudentPreferences({ studentId }) {
   const storageKey = `skillhub_student_settings_${studentId}`;
 
   const [theme, setTheme] = useState(() =>
@@ -30,27 +34,6 @@ function StudentSettings() {
       return defaultNotifications;
     }
   });
-
-  useEffect(() => {
-    const selectedTheme =
-      localStorage.getItem("skillhub_theme") === "dark"
-        ? "dark"
-        : "light";
-
-    setTheme(selectedTheme);
-
-    try {
-      const saved = localStorage.getItem(storageKey);
-
-      setNotifications(
-        saved
-          ? { ...defaultNotifications, ...JSON.parse(saved) }
-          : defaultNotifications
-      );
-    } catch {
-      setNotifications(defaultNotifications);
-    }
-  }, [storageKey]);
 
   useEffect(() => {
     document.documentElement.dataset.skillhubTheme = theme;
