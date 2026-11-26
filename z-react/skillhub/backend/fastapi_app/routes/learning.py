@@ -182,23 +182,8 @@ def module_to_dict(db, module, show_answers):
     }
 
 
-@router.post(
-    "/courses/{course_id}/modules",
-    status_code=201
-)
-def create_module(
-    course_id: int,
-    data: ModuleInput,
-    db: Session = Depends(get_db),
-    user: User = Depends(
-        require_roles("admin", "staff")
-    )
-):
-    course = get_course_or_404(db, course_id)
-
-    if not can_edit(course, user):
-        raise HTTPException(403, "Permission denied")
-
+def append_module(db, course_id, data):
+    db.execute(select(Course.id).where(Course.id == course_id).with_for_update())
     existing = db.scalars(
         select(Module.position)
         .where(Module.course_id == course_id)
@@ -223,6 +208,59 @@ def create_module(
     save_questions(
         db, module.id, data.questions
     )
+
+    return module
+
+
+def replace_module(db, module, data):
+    module.title = data.title.strip()
+    module.video_title = data.videoTitle
+    module.video_url = data.videoUrl
+    module.explanation = data.explanation
+
+    questions = db.scalars(
+        select(QuizQuestion).where(
+            QuizQuestion.module_id == module.id
+        )
+    ).all()
+
+    for question in questions:
+        options = db.scalars(
+            select(QuizOption).where(
+                QuizOption.question_id == question.id
+            )
+        ).all()
+
+        for option in options:
+            db.delete(option)
+
+        db.delete(question)
+
+    db.flush()
+
+    save_questions(
+        db, module.id, data.questions
+    )
+
+
+@router.post(
+    "/courses/{course_id}/modules",
+    status_code=201
+)
+def create_module(
+    course_id: int,
+    data: ModuleInput,
+    db: Session = Depends(get_db),
+    user: User = Depends(
+        require_roles("admin", "staff")
+    )
+):
+    course = get_course_or_404(db, course_id)
+
+    if not can_edit(course, user):
+        raise HTTPException(403, "Permission denied")
+
+    module = append_module(db, course_id, data)
 
     db.commit()
     db.refresh(module)
@@ -283,35 +321,7 @@ def update_module(
     if not can_edit(course, user):
         raise HTTPException(403, "Permission denied")
 
-    module.title = data.title.strip()
-    module.video_title = data.videoTitle
-    module.video_url = data.videoUrl
-    module.explanation = data.explanation
-
-    questions = db.scalars(
-        select(QuizQuestion).where(
-            QuizQuestion.module_id == module_id
-        )
-    ).all()
-
-    for question in questions:
-        options = db.scalars(
-            select(QuizOption).where(
-                QuizOption.question_id == question.id
-            )
-        ).all()
-
-        for option in options:
-            db.delete(option)
-
-        db.delete(question)
-
-    db.flush()
-
-    save_questions(
-        db, module.id, data.questions
-    )
-
+    replace_module(db, module, data)
     db.commit()
 
     return {

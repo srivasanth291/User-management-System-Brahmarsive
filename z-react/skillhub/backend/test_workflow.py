@@ -59,3 +59,48 @@ def test_invitation_through_completion(monkeypatch):
     assert api.post(module_path + "/quiz/submit", headers=student, json={"answers": answers}).json()["score"] == 100
     assert api.post(module_path + "/complete", headers=student).status_code == 200
     assert api.get(path + "/progress", headers=student).json()["progressPercentage"] == 100
+
+
+def test_invitation_expiry_and_revocation():
+    from datetime import datetime, timedelta, timezone
+    from shared.models.invitation import Invitation
+    from shared.security import create_access_token
+    from sqlalchemy import select
+
+    api = TestClient(app)
+    with SessionLocal.begin() as db:
+        admin = User(name="Invite Admin", role=UserRole.ADMIN, email="invite-admin@example.org",
+                     password_hash=hash_password("test password"))
+        db.add(admin)
+        db.flush()
+        headers = {"Authorization": "Bearer " + create_access_token(admin.id)}
+        now = datetime.now(timezone.utc)
+        for token, expiry in [("expired-invitation-for-test", now - timedelta(seconds=1)),
+                              ("pending-invitation-for-test", now + timedelta(hours=1))]:
+            db.add(Invitation(email="invite@example.org", role="student", invited_by=admin.id,
+                              token_hash=invitations.hash_token(token), expires_at=expiry))
+        db.flush()
+        invite_id = db.scalar(select(Invitation.id).where(Invitation.token_hash == invitations.hash_token(token)))
+    assert api.get("/api/invitations/verify", params={"token": "expired-invitation-for-test"}).json()["detail"] == "Invitation expired"
+    assert api.post(f"/api/invitations/{invite_id}/revoke", headers=headers).is_success
+    assert api.get("/api/invitations/verify", params={"token": token}).json()["detail"] == "Invitation revoked"
+
+
+def test_course_edit_preserves_identity_and_rolls_back_on_validation_error():
+    from shared.security import create_access_token
+    api = TestClient(app)
+    with SessionLocal.begin() as db:
+        actor = User(name="Editor", email="editor@example.org", password_hash=hash_password("test password"), role=UserRole.ADMIN)
+        db.add(actor)
+        db.flush()
+        headers = {"Authorization": "Bearer " + create_access_token(actor.id)}
+    course = api.post("/api/courses", headers=headers, json={"title": "First title", "category": "QA", "modules": [{"title": "First lesson"}]}).json()["course"]
+    path = f"/api/courses/{course['id']}"
+    module_id = api.get(path + "/modules", headers=headers).json()["modules"][0]["id"]
+    changes = {"title": " ", "moduleEdits": [{"id": module_id, "title": "Updated lesson"}]}
+    assert api.patch(path, headers=headers, json=changes).status_code == 422
+    assert api.get(path + "/modules", headers=headers).json()["modules"][0]["title"] == "First lesson"
+    changes["title"] = "Updated title"
+    assert api.patch(path, headers=headers, json=changes).status_code == 200
+    edited = api.get(path + "/modules", headers=headers).json()["modules"][0]
+    assert (edited["id"], edited["title"]) == (module_id, "Updated lesson")

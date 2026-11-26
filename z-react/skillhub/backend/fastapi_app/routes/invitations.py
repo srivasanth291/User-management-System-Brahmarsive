@@ -148,7 +148,7 @@ def invite_user(
             data.role.value,
             registration_link
         )
-    except (OSError, smtplib.SMTPException):
+    except (KeyError, OSError, smtplib.SMTPException):
         raise HTTPException(
             502,
             "Invitation saved, but email delivery failed. "
@@ -197,6 +197,9 @@ def register_invited_user(
         raise HTTPException(
             409, "Account already registered"
         )
+
+    if len(data.name.strip()) < 2:
+        raise HTTPException(422, "Name must contain at least two characters")
 
     user = User(
         name=data.name.strip(),

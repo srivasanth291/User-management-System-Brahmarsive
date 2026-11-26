@@ -12,6 +12,7 @@ from shared.models.user import User, UserRole
 from fastapi_app.dependencies import (
     get_current_user,
     require_roles,
+    check_permission,
     STAFF_PERMISSIONS,
 )
 
@@ -27,6 +28,7 @@ class UserUpdate(BaseModel):
         default=None, min_length=2, max_length=150
     )
     email: EmailStr | None = None
+    phone: str | None = Field(default=None, max_length=20, pattern=r"^[0-9+ ()-]*$")
     isActive: bool | None = None
 
 class StaffPermissionUpdate(BaseModel):
@@ -37,6 +39,7 @@ def serialize_user(user):
         "id": user.id,
         "name": user.name,
         "email": user.email,
+        "phone": user.phone,
         "role": user.role.value,
         "isActive": user.is_active,
         "permissions": user.permissions or [],
@@ -61,6 +64,7 @@ def list_users(
     conditions = []
 
     if current_user.role == UserRole.STAFF:
+        check_permission(current_user, "view_students")
         if role is not None and role != "student":
             raise HTTPException(
                 403, "Staff can view students only"
@@ -167,6 +171,9 @@ def get_user(
         )
     )
 
+    if current_user.role == UserRole.STAFF and current_user.id != target.id:
+        check_permission(current_user, "view_students")
+
     if not allowed:
         raise HTTPException(403, "Permission denied")
 
@@ -178,8 +185,11 @@ def update_user(
     user_id: int,
     data: UserUpdate,
     db: Session = Depends(get_db),
-    admin: User = Depends(require_roles("admin"))
+    actor: User = Depends(get_current_user)
 ):
+    if actor.role != UserRole.ADMIN and (actor.id != user_id or "isActive" in data.model_fields_set):
+        raise HTTPException(403, "Permission denied")
+
     target = db.get(User, user_id)
 
     if target is None:
@@ -187,9 +197,12 @@ def update_user(
 
     changes = data.model_dump(exclude_unset=True)
 
+    if "phone" in changes:
+        target.phone = changes["phone"]
+
     if "name" in changes:
-        if changes["name"] is None:
-            raise HTTPException(422, "Name cannot be null")
+        if not changes["name"] or len(changes["name"].strip()) < 2:
+            raise HTTPException(422, "Name must contain at least two characters")
         target.name = changes["name"].strip()
 
     if "email" in changes:
@@ -201,7 +214,7 @@ def update_user(
         if changes["isActive"] is None:
             raise HTTPException(422, "isActive cannot be null")
 
-        if target.id == admin.id and not changes["isActive"]:
+        if target.id == actor.id and not changes["isActive"]:
             raise HTTPException(
                 400, "Cannot deactivate yourself"
             )

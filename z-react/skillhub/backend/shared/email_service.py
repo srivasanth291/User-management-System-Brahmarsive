@@ -1,5 +1,6 @@
 import os
 import smtplib
+import ssl
 
 from pathlib import Path
 from email.message import EmailMessage
@@ -45,7 +46,7 @@ SkillHub Team
         int(os.getenv("SMTP_PORT", "587")),
         timeout=20
     ) as server:
-        server.starttls()
+        server.starttls(context=ssl.create_default_context())
         server.login(
             os.environ["SMTP_USER"],
             os.environ["SMTP_PASSWORD"]

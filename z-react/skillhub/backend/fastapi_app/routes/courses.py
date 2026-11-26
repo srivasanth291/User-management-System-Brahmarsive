@@ -8,6 +8,8 @@ from sqlalchemy.orm import Session
 
 from shared.database import get_db
 from shared.models.course import Course
+from shared.models.learning import Module
+from fastapi_app.routes.learning import ModuleInput, append_module, replace_module
 from shared.models.user import User
 from shared.models.progress import Enrollment
 from fastapi_app.dependencies import (
@@ -29,6 +31,12 @@ class CourseCreate(BaseModel):
     description: str = ""
     thumbnailUrl: str | None = None
     instructorId: int | None = None
+    modules: list[ModuleInput] = Field(default_factory=list)
+    status: Literal["draft", "published"] = "draft"
+
+
+class ModuleEdit(ModuleInput):
+    id: int | None = None
 
 
 class CourseUpdate(BaseModel):
@@ -37,6 +45,8 @@ class CourseUpdate(BaseModel):
     description: str | None = None
     thumbnailUrl: str | None = None
     instructorId: int | None = None
+    moduleEdits: list[ModuleEdit] = Field(default_factory=list)
+    removedModuleIds: list[int] = Field(default_factory=list)
     status: Literal["draft", "published", "archived"] | None = None
 
 def course_to_dict(course: Course):
@@ -96,17 +106,24 @@ def create_course(
     if not title or not category:
         raise HTTPException(422, "Title and category are required")
     validate_instructor(db, data.instructorId)
+    if data.modules:
+        check_permission(user, "manage_modules")
+    if data.status == "published":
+        check_permission(user, "publish_course")
     course = Course(
         title=title,
         category=category,
         description=data.description,
         thumbnail_url=data.thumbnailUrl,
-        status="draft",
+        status=data.status,
         created_by=user.id,
         instructor_id=data.instructorId,
     )
 
     db.add(course)
+    db.flush()
+    for module in data.modules:
+        append_module(db, course.id, module)
     db.commit()
     db.refresh(course)
 
@@ -183,7 +200,22 @@ def update_course(
 
     check_course_permission(course, user)
 
-    changes = data.model_dump(exclude_unset=True)
+    changes = data.model_dump(exclude_unset=True, exclude={"moduleEdits", "removedModuleIds"})
+    if data.moduleEdits or data.removedModuleIds:
+        check_permission(user, "manage_modules")
+        ids = [edit.id for edit in data.moduleEdits if edit.id is not None] + data.removedModuleIds
+        records = {m.id: m for m in db.scalars(select(Module).where(
+            Module.course_id == course_id, Module.id.in_(ids)
+        ).with_for_update())}
+        if len(records) != len(ids):
+            raise HTTPException(409, "Module list changed. Reload the course before saving")
+        for edit in data.moduleEdits:
+            if edit.id is None:
+                append_module(db, course_id, edit)
+            else:
+                replace_module(db, records[edit.id], edit)
+        for module_id in data.removedModuleIds:
+            db.delete(records[module_id])
 
     if "status" in changes:
         check_permission(user, "publish_course")
