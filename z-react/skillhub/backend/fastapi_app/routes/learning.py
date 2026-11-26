@@ -14,7 +14,7 @@ from shared.models.learning import (
 from shared.models.user import User
 from shared.models.progress import Enrollment
 from fastapi_app.dependencies import (
-    get_current_user, require_roles
+    get_current_user, require_roles, has_permission
 )
 
 router = APIRouter(
@@ -63,6 +63,7 @@ def can_edit(course, user):
         return True
     return (
         user.role.value == "staff"
+        and has_permission(user, "manage_modules")
         and course.created_by == user.id
     )
 

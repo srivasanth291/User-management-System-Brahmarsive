@@ -47,6 +47,7 @@ def login_required(function):
                 "id": user.id,
                 "name": user.name,
                 "email": user.email,
+                "permissions": user.permissions or [],
                 "role": user.role.value
             }
 

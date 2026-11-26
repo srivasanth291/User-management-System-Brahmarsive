@@ -277,6 +277,18 @@ def complete_module(
 ):
     get_student_module(db, module_id, user)
 
+    has_quiz = db.scalar(select(QuizQuestion.id).where(
+        QuizQuestion.module_id == module_id
+    ).limit(1))
+    if has_quiz:
+        passed = db.scalar(select(QuizAttempt.id).where(
+            QuizAttempt.module_id == module_id,
+            QuizAttempt.student_id == user.id,
+            QuizAttempt.score >= 70,
+        ).limit(1))
+        if not passed:
+            raise HTTPException(409, "Pass the module quiz before completing it")
+
     progress = db.scalar(
         select(ModuleProgress).where(
             ModuleProgress.student_id == user.id,

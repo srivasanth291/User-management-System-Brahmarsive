@@ -11,6 +11,7 @@ from shared.models.course import Course
 from shared.models.user import User
 from shared.models.progress import Enrollment
 from fastapi_app.dependencies import (
+    check_permission,
     get_current_user,
     require_roles
 )
@@ -31,8 +32,8 @@ class CourseCreate(BaseModel):
 
 
 class CourseUpdate(BaseModel):
-    title: str | None = None
-    category: str | None = None
+    title: str | None = Field(default=None, max_length=200)
+    category: str | None = Field(default=None, max_length=100)
     description: str | None = None
     thumbnailUrl: str | None = None
     instructorId: int | None = None
@@ -88,6 +89,7 @@ def create_course(
     db: Session = Depends(get_db),
     user: User = Depends(require_roles("admin", "staff"))
 ):
+    check_permission(user, "create_course")
     title = data.title.strip()
     category = data.category.strip()
 
@@ -183,6 +185,11 @@ def update_course(
 
     changes = data.model_dump(exclude_unset=True)
 
+    if "status" in changes:
+        check_permission(user, "publish_course")
+    if changes.keys() - {"status"}:
+        check_permission(user, "edit_course")
+
     field_mapping = {
     "thumbnailUrl": "thumbnail_url",
     "instructorId": "instructor_id",
@@ -230,6 +237,7 @@ def delete_course(
 
     check_course_permission(course, user)
 
+    check_permission(user, "publish_course")
     course.status = "draft"
     db.commit()
     db.refresh(course)

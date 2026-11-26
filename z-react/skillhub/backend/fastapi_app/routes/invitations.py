@@ -18,7 +18,7 @@ from shared.models.user import User, UserRole
 from shared.models.invitation import Invitation
 from shared.security import hash_password
 from shared.email_service import send_invitation_email
-from fastapi_app.dependencies import require_roles
+from fastapi_app.dependencies import check_permission, require_roles
 
 
 router = APIRouter(
@@ -90,6 +90,7 @@ def invite_user(
             403, "Staff can invite students only"
         )
 
+    check_permission(current_user, "add_student")
     email = str(data.email).strip().lower()
 
     existing = db.scalar(

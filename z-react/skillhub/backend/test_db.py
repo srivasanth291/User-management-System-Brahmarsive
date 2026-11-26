@@ -1,11 +1,5 @@
+from shared.database import test_connection as current_database
 
-from shared.database import test_connection
 
-try:
-    database_name = test_connection()
-    print("Database connected successfully!")
-    print("Connected database:", database_name)
-
-except Exception as error:
-    print("Database connection failed!")
-    print(type(error).__name__, str(error))
+def test_isolated_database_connection():
+    assert current_database() == "postgres"

@@ -78,6 +78,7 @@ def login():
                 "id": user.id,
                 "name": user.name,
                 "email": user.email,
+                "permissions": user.permissions or [],
                 "role": user.role.value
             }
         }), 200

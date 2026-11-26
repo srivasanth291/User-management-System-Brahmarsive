@@ -1,6 +1,7 @@
 fastapi
 uvicorn[standard]
 flask
+flask-cors
 SQLAlchemy
 psycopg[binary]
 python-dotenv

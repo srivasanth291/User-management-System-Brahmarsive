@@ -11,7 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(BASE_DIR / ".env")
 
-DATABASE_URL = URL.create(
+DATABASE_URL = os.getenv("DATABASE_URL") or URL.create(
     drivername="postgresql+psycopg",
     username=os.environ["DB_USER"],
     password=os.environ["DB_PASSWORD"],

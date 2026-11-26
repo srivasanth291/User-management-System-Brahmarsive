@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, jsonify
 from flask_cors import CORS
 
@@ -11,6 +13,7 @@ CORS(
     resources={
         r"/api/*": {
             "origins": [
+                os.getenv("FRONTEND_URL", "http://localhost:5173").rstrip("/"),
                 "http://localhost:5173",
                 "http://localhost:5174",
                 "http://localhost:5175",
