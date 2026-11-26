@@ -3,12 +3,13 @@ from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
-from sqlalchemy import select
+from sqlalchemy import select, or_
 from sqlalchemy.orm import Session
 
 from shared.database import get_db
 from shared.models.course import Course
 from shared.models.user import User
+from shared.models.progress import Enrollment
 from fastapi_app.dependencies import (
     get_current_user,
     require_roles
@@ -26,6 +27,7 @@ class CourseCreate(BaseModel):
     category: str = Field(min_length=1, max_length=100)
     description: str = ""
     thumbnailUrl: str | None = None
+    instructorId: int | None = None
 
 
 class CourseUpdate(BaseModel):
@@ -33,8 +35,8 @@ class CourseUpdate(BaseModel):
     category: str | None = None
     description: str | None = None
     thumbnailUrl: str | None = None
+    instructorId: int | None = None
     status: Literal["draft", "published", "archived"] | None = None
-
 
 def course_to_dict(course: Course):
     return {
@@ -44,8 +46,24 @@ def course_to_dict(course: Course):
         "description": course.description,
         "thumbnailUrl": course.thumbnail_url,
         "status": course.status,
-        "createdBy": course.created_by
+        "createdBy": course.created_by,
+        "instructorId": course.instructor_id,
     }
+def validate_instructor(db: Session, instructor_id: int | None):
+    if instructor_id is None:
+        return
+
+    instructor = db.get(User, instructor_id)
+
+    if (
+        instructor is None
+        or instructor.role.value != "staff"
+        or not instructor.is_active
+    ):
+        raise HTTPException(
+            status_code=422,
+            detail="Please select a valid active staff instructor"
+        )
 
 
 def check_course_permission(course: Course, user: User):
@@ -75,14 +93,15 @@ def create_course(
 
     if not title or not category:
         raise HTTPException(422, "Title and category are required")
-
+    validate_instructor(db, data.instructorId)
     course = Course(
         title=title,
         category=category,
         description=data.description,
         thumbnail_url=data.thumbnailUrl,
         status="draft",
-        created_by=user.id
+        created_by=user.id,
+        instructor_id=data.instructorId,
     )
 
     db.add(course)
@@ -103,11 +122,16 @@ def get_courses(
     query = select(Course).order_by(Course.id.desc())
 
     if user.role.value == "student":
-        query = query.where(Course.status == "published")
+        query = query.join(Enrollment, Enrollment.course_id == Course.id).where(Course.status == "published", Enrollment.student_id == user.id)
 
     elif user.role.value == "staff":
-        query = query.where(Course.created_by == user.id)
-
+        query = query.where(
+            or_(
+                Course.created_by == user.id,
+                Course.instructor_id == user.id
+            )
+        )
+       
     courses = db.scalars(query).all()
 
     return {
@@ -129,12 +153,17 @@ def get_course(
     if course is None:
         raise HTTPException(404, "Course not found")
 
-    if user.role.value == "student" and course.status != "published":
-        raise HTTPException(404, "Course not found")
+    if user.role.value == "student":
+        enrolled = db.scalar(select(Enrollment.id).where(Enrollment.course_id == course.id, Enrollment.student_id == user.id))
+        if course.status != "published" or enrolled is None:
+            raise HTTPException(404, "Course not found")
 
-    if user.role.value == "staff" and course.created_by != user.id:
-        raise HTTPException(403, "Permission denied")
-
+    if user.role.value == "staff":
+        if (
+            course.created_by != user.id
+            and course.instructor_id != user.id
+        ):
+            raise HTTPException(403, "Permission denied")
     return {"course": course_to_dict(course)}
 
 
@@ -155,9 +184,11 @@ def update_course(
     changes = data.model_dump(exclude_unset=True)
 
     field_mapping = {
-        "thumbnailUrl": "thumbnail_url"
+    "thumbnailUrl": "thumbnail_url",
+    "instructorId": "instructor_id",
     }
-
+    if "instructorId" in changes:
+        validate_instructor(db, changes["instructorId"])
     for field, value in changes.items():
         column = field_mapping.get(field, field)
 
@@ -199,9 +230,10 @@ def delete_course(
 
     check_course_permission(course, user)
 
-    db.delete(course)
+    course.status = "draft"
     db.commit()
+    db.refresh(course)
 
     return {
-        "message": "Course deleted successfully"
+        "message": "Course moved to draft successfully"
     }

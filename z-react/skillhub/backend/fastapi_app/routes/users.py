@@ -11,7 +11,8 @@ from shared.database import get_db
 from shared.models.user import User, UserRole
 from fastapi_app.dependencies import (
     get_current_user,
-    require_roles
+    require_roles,
+    STAFF_PERMISSIONS,
 )
 
 
@@ -28,6 +29,8 @@ class UserUpdate(BaseModel):
     email: EmailStr | None = None
     isActive: bool | None = None
 
+class StaffPermissionUpdate(BaseModel):
+    permissions: list[str] = Field(default_factory=list)
 
 def serialize_user(user):
     return {
@@ -36,6 +39,7 @@ def serialize_user(user):
         "email": user.email,
         "role": user.role.value,
         "isActive": user.is_active,
+        "permissions": user.permissions or [],
         "createdAt": (
             user.created_at.isoformat()
             if user.created_at else None
@@ -99,6 +103,49 @@ def my_profile(
 ):
     return {"user": serialize_user(current_user)}
 
+@router.put("/{user_id}/permissions")
+def update_staff_permissions(
+    user_id: int,
+    data: StaffPermissionUpdate,
+    db: Session = Depends(get_db),
+    admin: User = Depends(require_roles("admin")),
+):
+    staff = db.get(User, user_id)
+
+    if staff is None:
+        raise HTTPException(404, "User not found")
+
+    if staff.role != UserRole.STAFF:
+        raise HTTPException(
+            422,
+            "Permissions can only be assigned to staff"
+        )
+
+    requested = data.permissions
+
+    if len(requested) != len(set(requested)):
+        raise HTTPException(
+            422,
+            "Duplicate permissions are not allowed"
+        )
+
+    invalid = set(requested) - STAFF_PERMISSIONS
+
+    if invalid:
+        raise HTTPException(
+            422,
+            f"Invalid permissions: {', '.join(sorted(invalid))}"
+        )
+
+    staff.permissions = sorted(requested)
+
+    db.commit()
+    db.refresh(staff)
+
+    return {
+        "message": "Staff permissions updated",
+        "user": serialize_user(staff),
+    }
 
 @router.get("/{user_id}")
 def get_user(

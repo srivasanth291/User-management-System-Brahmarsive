@@ -1,14 +1,18 @@
 
+import { api } from "../api/client";
+const progressCache = new Map();
+export async function refreshStudentProgress(courses) {
+  await Promise.all((courses || []).map(async course => {
+    try { progressCache.set(String(course.id), await api(`/api/courses/${course.id}/progress`)); }
+    catch { progressCache.delete(String(course.id)); }
+  }));
+}
 export function getStudentProgress(studentId, course) {
-  const key = `skillhub_progress_${studentId}_${course.id}`;
-
-  let saved = {};
-
-  try {
-    saved = JSON.parse(localStorage.getItem(key)) || {};
-  } catch {
-    saved = {};
-  }
+  const server = progressCache.get(String(course.id));
+  const saved = {
+    completedModules: (server?.modules || []).flatMap((m, index) => m.completed ? [index] : []),
+    selectedModule: 0
+  };
 
   const totalModules = course.modules?.length || 0;
 

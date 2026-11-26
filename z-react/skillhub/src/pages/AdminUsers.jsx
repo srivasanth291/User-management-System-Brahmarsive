@@ -11,10 +11,15 @@ const initialForm = {
 };
 
 const permissionsList = [
-  "Create Course",
-  "Add Student",
-  "Manage Users",
-  "View Reports",
+  { label: "Create Course", value: "create_course" },
+  { label: "Edit Course", value: "edit_course" },
+  { label: "Publish Course", value: "publish_course" },
+  { label: "Manage Modules & Quizzes", value: "manage_modules" },
+  { label: "View Students", value: "view_students" },
+  { label: "Add Student", value: "add_student" },
+  { label: "Assign Course", value: "assign_course" },
+  { label: "Unassign Course", value: "unassign_course" },
+  { label: "View Student Progress", value: "view_progress" },
 ];
 
 function AdminUsers() {
@@ -139,7 +144,7 @@ function AdminUsers() {
     window.open(gmailUrl, "_blank", "noopener,noreferrer");
   }
 
-  function handleInvite(event) {
+  async function handleInvite(event) {
     event.preventDefault();
 
     const name = form.name.trim();
@@ -150,7 +155,7 @@ function AdminUsers() {
       return;
     }
 
-    const result = inviteUser({
+    const result = await inviteUser({
       name,
       email,
       role: form.role,
@@ -165,19 +170,17 @@ function AdminUsers() {
     closeModal();
     setActiveTab("Pending");
 
-    // Opens Gmail compose. Admin must click Send manually.
-    openGmailInvite(result.user);
+    alert("Invitation email sent by the server.");
   }
 
-  function handleResend(user) {
-    const updated = resendInvite(user.id);
-
-    if (updated) {
-      openGmailInvite(updated);
-    }
+  async function handleResend(user) {
+    try {
+      const updated = await resendInvite(user.id);
+      alert(updated ? "Invitation email resent." : "Unable to resend invitation.");
+    } catch (error) { alert(error.message); }
   }
 
-  function handleEdit(event) {
+  async function handleEdit(event) {
     event.preventDefault();
 
     const name = form.name.trim();
@@ -199,12 +202,12 @@ function AdminUsers() {
       return;
     }
 
-    updateUser(editingId, {
+    try { await updateUser(editingId, {
       name,
       email,
       role: form.role,
       permissions: form.permissions,
-    });
+    }); } catch (error) { alert(error.message); return; }
 
     closeModal();
   }

@@ -1,8 +1,7 @@
-
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useUsers } from "../context/UserContext";
-import { useCourses } from "../context/CourseContext";
+import { useAppSelector } from "../store/hooks";
 import { useCourseMappings } from "../context/CourseMappingContext";
 import "./AdminCourseMapping.css";
 import "./StaffCourseMapping.css";
@@ -10,7 +9,7 @@ import "./StaffCourseMapping.css";
 function StaffCourseMapping() {
   const { currentUser } = useAuth();
   const { users } = useUsers();
-  const { courses } = useCourses();
+  const  courses  = useAppSelector((state) => state.courses.items);
   const { mappings, assignCourse, unassignCourse } = useCourseMappings();
 
   const [studentId, setStudentId] = useState("");
@@ -22,18 +21,14 @@ function StaffCourseMapping() {
   const staffId = String(currentUser?.id ?? "");
 
   const myCourses = courses.filter((course) => {
-    const createdByMe =
-      String(course.createdBy ?? "") === staffId;
+    const createdByMe = String(course.createdBy ?? "") === staffId;
 
-    const assignedToMe =
-      String(course.instructorId ?? "") === staffId;
+    const assignedToMe = String(course.instructorId ?? "") === staffId;
 
     return createdByMe || assignedToMe;
   });
 
-  const myCourseIds = new Set(
-    myCourses.map((course) => String(course.id))
-  );
+  const myCourseIds = new Set(myCourses.map((course) => String(course.id)));
 
   const students = users.filter((user) => {
     const role = (user.role || "").toLowerCase();
@@ -43,18 +38,14 @@ function StaffCourseMapping() {
   });
 
   const myMappings = mappings
-    .filter((mapping) =>
-      myCourseIds.has(String(mapping.courseId))
-    )
+    .filter((mapping) => myCourseIds.has(String(mapping.courseId)))
     .map((mapping) => {
       const student = users.find(
-        (user) =>
-          String(user.id) === String(mapping.studentId)
+        (user) => String(user.id) === String(mapping.studentId),
       );
 
       const course = myCourses.find(
-        (course) =>
-          String(course.id) === String(mapping.courseId)
+        (course) => String(course.id) === String(mapping.courseId),
       );
 
       if (!student || !course) return null;
@@ -83,7 +74,7 @@ function StaffCourseMapping() {
     return matchesSearch && matchesCourse;
   });
 
-  function handleAssign(event) {
+  async function handleAssign(event) {
     event.preventDefault();
 
     if (!studentId || !courseId) {
@@ -102,7 +93,7 @@ function StaffCourseMapping() {
       return;
     }
 
-    const result = assignCourse(studentId, courseId);
+    const result = await assignCourse(studentId, courseId);
 
     setMessage({
       type: result.ok ? "success" : "error",
@@ -115,24 +106,22 @@ function StaffCourseMapping() {
     }
   }
 
-  function handleUnassign(mapping) {
+  async function handleUnassign(mapping) {
     if (!myCourseIds.has(String(mapping.courseId))) {
       return;
     }
 
     const confirmed = window.confirm(
-      `Unassign "${mapping.course.title}" from "${mapping.student.name}"?`
+      `Unassign "${mapping.course.title}" from "${mapping.student.name}"?`,
     );
 
     if (!confirmed) return;
 
-    const result = unassignCourse(mapping.id);
+    const result = await unassignCourse(mapping.id);
 
     setMessage({
       type: result?.ok === false ? "error" : "success",
-      text:
-        result?.message ||
-        "Course unassigned successfully.",
+      text: result?.message || "Course unassigned successfully.",
     });
   }
 
@@ -159,9 +148,7 @@ function StaffCourseMapping() {
 
         <form className="mapping-form" onSubmit={handleAssign}>
           <div className="mapping-field">
-            <label htmlFor="staffMappingStudent">
-              Select Student
-            </label>
+            <label htmlFor="staffMappingStudent">Select Student</label>
 
             <select
               id="staffMappingStudent"
@@ -183,9 +170,7 @@ function StaffCourseMapping() {
           </div>
 
           <div className="mapping-field">
-            <label htmlFor="staffMappingCourse">
-              Select Course
-            </label>
+            <label htmlFor="staffMappingCourse">Select Course</label>
 
             <select
               id="staffMappingCourse"
@@ -209,19 +194,14 @@ function StaffCourseMapping() {
           <button
             type="submit"
             className="mapping-assign-btn"
-            disabled={
-              students.length === 0 || myCourses.length === 0
-            }
+            disabled={students.length === 0 || myCourses.length === 0}
           >
             Assign Course
           </button>
         </form>
 
         {message && (
-          <p
-            className={`mapping-message ${message.type}`}
-            role="status"
-          >
+          <p className={`mapping-message ${message.type}`} role="status">
             {message.text}
           </p>
         )}
@@ -242,29 +222,23 @@ function StaffCourseMapping() {
 
           <select
             value={courseFilter}
-            onChange={(event) =>
-              setCourseFilter(event.target.value)
-            }
+            onChange={(event) => setCourseFilter(event.target.value)}
           >
             <option value="All">All My Courses</option>
 
             {myCourses.map((course) => (
-              <option
-                key={course.id}
-                value={String(course.id)}
-              >
+              <option key={course.id} value={String(course.id)}>
                 {course.title}
               </option>
             ))}
           </select>
         </div>
 
-        {search.trim().length > 0 &&
-          search.trim().length < 3 && (
-            <p className="mapping-search-hint">
-              Enter at least 3 characters to search.
-            </p>
-          )}
+        {search.trim().length > 0 && search.trim().length < 3 && (
+          <p className="mapping-search-hint">
+            Enter at least 3 characters to search.
+          </p>
+        )}
 
         <div className="mapping-table-wrapper">
           <table className="mapping-table">

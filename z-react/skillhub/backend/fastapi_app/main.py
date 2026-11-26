@@ -1,5 +1,7 @@
 
 from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware
+import os
 
 from shared.models.user import User
 
@@ -30,6 +32,13 @@ from fastapi_app.routes.invitations import (
 
 
 app = FastAPI(title="SkillHub FastAPI")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=list(set([os.getenv("FRONTEND_URL", "http://localhost:5173").rstrip("/"), "http://127.0.0.1:5173"])),
+    allow_credentials=False,
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allow_headers=["Authorization", "Content-Type"],
+)
 
 app.include_router(courses_router)
 app.include_router(learning_router)

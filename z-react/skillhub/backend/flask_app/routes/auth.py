@@ -65,7 +65,7 @@ def login():
 
         if not user.is_active:
             return jsonify({
-                "message": "Account is inactive"
+                "message": "Invalid email or password"
             }), 403
 
         token = create_access_token(user.id)

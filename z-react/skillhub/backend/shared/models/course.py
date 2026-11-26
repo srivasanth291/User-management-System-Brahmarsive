@@ -41,6 +41,11 @@ class Course(Base):
         ForeignKey("users.id"),
         nullable=False
     )
+    instructor_id: Mapped[int | None] = mapped_column(
+        Integer,
+        ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True
+    )
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

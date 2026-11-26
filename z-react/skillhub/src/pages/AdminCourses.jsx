@@ -1,7 +1,11 @@
 import CourseViewModal from "../components/CourseViewModal";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useCourses } from "../context/CourseContext";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import {
+  addCourse,
+  updateCourse,
+} from "../store/slices/coursesSlice";
 import { useUsers } from "../context/UserContext";
 import ModuleBuilder from "../components/ModuleBuilder";
 import QuizBuilder from "../components/QuizzBuilder";
@@ -47,7 +51,8 @@ function AdminCourses() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const { courses, addCourse, updateCourse, deleteCourse } = useCourses();
+  const courses = useAppSelector((state) => state.courses.items);
+  const dispatch = useAppDispatch();
   const { users } = useUsers();
 
   const showCreateForm = searchParams.get("create") === "true";
@@ -253,7 +258,7 @@ function AdminCourses() {
     setStep(2);
   }
 
-  function handlePublishCourse() {
+  async function handlePublishCourse() {
     if (
       !courseForm.title.trim() ||
       !courseForm.category ||
@@ -305,7 +310,7 @@ function AdminCourses() {
       modules,
     };
 
-    addCourse(newCourse);
+    await dispatch(addCourse(newCourse)).unwrap();
 
     setCourseForm({ ...emptyCourseForm });
     setModules([]);
@@ -320,26 +325,57 @@ function AdminCourses() {
 
     alert("Course published successfully!");
   }
-  function handleEditCourse(updatedCourse) {
+  async function handleEditCourse(updatedCourse) {
     if (!editingCourse) return;
 
-    updateCourse(editingCourse.id, updatedCourse);
+    await dispatch(updateCourse({ id: editingCourse.id, updatedCourse })).unwrap();
     setEditingCourse(null);
 
     alert("Course updated successfully!");
   }
 
-  function handleDeleteCourse(course) {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${course.title}"?`,
-    );
+async function handleDeleteCourse(course) {
+  const confirmed = window.confirm(
+    `Move "${course.title}" to Draft?`
+  );
 
-    if (!confirmed) return;
+  if (!confirmed) return;
 
-    deleteCourse(course.id);
-    alert("Course deleted successfully!");
+  try {
+    await dispatch(
+      updateCourse({
+        id: course.id,
+        updatedCourse: { status: "draft" },
+      })
+    ).unwrap();
+
+    setCourseTab("Draft");
+    alert("Course moved to Draft successfully!");
+  } catch (error) {
+    alert(error.message || "Failed to move course to Draft.");
   }
+}
+async function handlePublishDraft(course) {
+  const confirmed = window.confirm(
+    `Are you sure you want to publish "${course.title}"?`
+  );
 
+  if (!confirmed) return;
+
+  try {
+    await dispatch(
+      updateCourse({
+        id: course.id,
+        updatedCourse: { status: "published" },
+      })
+    ).unwrap();
+
+    setCourseTab("Published");
+    alert("Course published successfully!");
+  } catch (error) {
+    alert(error.message || "Failed to publish course.");
+  }
+}
   const draftCourse = hasDraft
     ? {
         id: "current-draft",
@@ -355,13 +391,13 @@ function AdminCourses() {
       }
     : null;
 
-  const allCourses = [
-    ...courses.map((course) => ({
-      ...course,
-      isDraft: false,
-    })),
-    ...(draftCourse ? [draftCourse] : []),
-  ];
+const allCourses = [
+  ...courses.map((course) => ({
+    ...course,
+    isDraft: String(course.status || "").toLowerCase() === "draft",
+  })),
+  ...(draftCourse ? [draftCourse] : []),
+];
 
   const categories = [
     ...new Set(allCourses.map((course) => course.category).filter(Boolean)),
@@ -676,7 +712,13 @@ function AdminCourses() {
                 <h3>{course.title}</h3>
                 <p>{course.category}</p>
 
-                <span>Instructor: {course.instructor}</span>
+                <span>
+                    Instructor: {
+                      staffUsers.find(
+                        staff => String(staff.id) === String(course.instructorId)
+                      )?.name || "Not assigned"
+                    }
+                  </span>
                 {!course.isDraft && (
                   <div className="course-card-actions">
                     <button
@@ -698,25 +740,38 @@ function AdminCourses() {
                       className="delete-course-btn"
                       onClick={() => handleDeleteCourse(course)}
                     >
-                      Delete
+                      Move to Draft
                     </button>
                   </div>
                 )}
-                {course.isDraft && (
-                  <>
-                    <p className="draft-module-count">
-                      Saved Modules: {course.modules.length}
-                    </p>
+{course.isDraft && (
+  <div className="course-card-actions">
+    {course.id === "current-draft" ? (
+      <button
+        type="button"
+        onClick={() => navigate("/admin/courses?create=true")}
+      >
+        Resume Editing
+      </button>
+    ) : (
+      <>
+        <button
+          type="button"
+          onClick={() => setEditingCourse(course)}
+        >
+          Edit Course
+        </button>
 
-                    <button
-                      type="button"
-                      className="resume-course-btn"
-                      onClick={() => navigate("/admin/courses?create=true")}
-                    >
-                      Resume Editing
-                    </button>
-                  </>
-                )}
+        <button
+          type="button"
+          onClick={() => handlePublishDraft(course)}
+        >
+          Publish
+        </button>
+      </>
+    )}
+  </div>
+)}
               </div>
             </div>
           ))}

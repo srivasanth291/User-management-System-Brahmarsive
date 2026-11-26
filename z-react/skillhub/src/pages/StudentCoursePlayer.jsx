@@ -2,29 +2,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useCourses } from "../context/CourseContext";
+import { useAppSelector } from "../store/hooks";
 import { useCourseMappings } from "../context/CourseMappingContext";
 import "./StudentCoursePlayer.css";
+import { api, postJson } from "../api/client";
 
-function getSavedProgress(storageKey) {
-  try {
-    const saved = JSON.parse(localStorage.getItem(storageKey));
-
-    return {
-      selectedModule: Number(saved?.selectedModule) || 0,
-      completedModules: Array.isArray(saved?.completedModules)
-        ? [...new Set(saved.completedModules.map(Number))]
-        : [],
-      scores: saved?.scores || {},
-    };
-  } catch {
-    return {
-      selectedModule: 0,
-      completedModules: [],
-      scores: {},
-    };
-  }
-}
+function emptyProgress() { return { selectedModule: 0, completedModules: [], scores: {} }; }
 
 function getVideoUrl(url) {
   if (!url) return "";
@@ -85,7 +68,7 @@ function StudentCoursePlayer() {
   const navigate = useNavigate();
 
   const { currentUser } = useAuth();
-  const { courses } = useCourses();
+  const courses = useAppSelector((state) => state.courses.items);
   const { mappings } = useCourseMappings();
 
   const studentId = String(currentUser?.id ?? "");
@@ -105,7 +88,7 @@ function StudentCoursePlayer() {
 
   const [progressState, setProgressState] = useState(() => ({
     key: storageKey,
-    data: getSavedProgress(storageKey),
+    data: emptyProgress(),
   }));
 
   const [answersState, setAnswersState] = useState({
@@ -119,7 +102,7 @@ function StudentCoursePlayer() {
   const progress =
     progressState.key === storageKey
       ? progressState.data
-      : getSavedProgress(storageKey);
+      : emptyProgress();
 
   const selectedIndex = Math.min(
     Math.max(Number(progress.selectedModule) || 0, 0),
@@ -156,7 +139,7 @@ function StudentCoursePlayer() {
   useEffect(() => {
     setProgressState({
       key: storageKey,
-      data: getSavedProgress(storageKey),
+      data: emptyProgress(),
     });
 
     setAnswersState({
@@ -169,24 +152,25 @@ function StudentCoursePlayer() {
   }, [storageKey]);
 
   useEffect(() => {
-    if (
-      isAssigned &&
-      course &&
-      progressState.key === storageKey
-    ) {
-      localStorage.setItem(
-        storageKey,
-        JSON.stringify(progressState.data)
-      );
-    }
-  }, [progressState, storageKey, isAssigned, course]);
+    if (!isAssigned || !course) return;
+    let active = true;
+    api(`/api/courses/${courseId}/progress`).then(result => {
+      if (!active) return;
+      const completedModules = (result.modules || []).flatMap((module, index) => module.completed ? [index] : []);
+      setProgressState(previous => ({key: storageKey, data: {
+        selectedModule: previous.key === storageKey ? previous.data.selectedModule : 0,
+        completedModules, scores: {}
+      }}));
+    }).catch(error => { if (active) setQuizResult({message:error.message,error:true}); });
+    return () => { active = false; };
+  }, [courseId, isAssigned, course?.id, storageKey]);
 
   function updateProgress(updater) {
     setProgressState((previous) => {
       const current =
         previous.key === storageKey
           ? previous.data
-          : getSavedProgress(storageKey);
+          : emptyProgress();
 
       const updated = updater(current);
 
@@ -235,70 +219,27 @@ function StudentCoursePlayer() {
     setQuizResult(null);
   }
 
-  function submitQuiz() {
-    if (quizzes.length === 0) return;
-
+  async function submitQuiz() {
+    if (!quizzes.length) return;
     if (quizzes.some((_, index) => !answers[index])) {
-      setQuizResult({
-        message: "Please answer all questions first.",
-        error: true,
-      });
-      return;
+      setQuizResult({message: "Please answer all questions first.", error:true}); return;
     }
-
-    const score = quizzes.reduce((total, quiz, index) => {
-      return total + (
-        answers[index] === quiz.correct ? 1 : 0
-      );
-    }, 0);
-
-    const quizPercentage = Math.round(
-      (score / quizzes.length) * 100
-    );
-
-    const passed = quizPercentage >= 70;
-
-    setQuizResult({
-      message: `Your score: ${score}/${quizzes.length} (${quizPercentage}%). ${
-        passed
-          ? "Module completed!"
-          : "Minimum 70% required. Try again."
-      }`,
-      error: !passed,
-    });
-
-    updateProgress((previous) => ({
-      ...previous,
-      scores: {
-        ...previous.scores,
-        [selectedIndex]: score,
-      },
-      completedModules: passed
-        ? [
-            ...new Set([
-              ...previous.completedModules,
-              selectedIndex,
-            ]),
-          ]
-        : previous.completedModules,
-    }));
+    try {
+      const submitted = Object.fromEntries(quizzes.map((q, index) => [q.id, q.optionIds[answers[index]]]));
+      const result = await api(`/api/modules/${selectedModule.id}/quiz/submit`, postJson({answers: submitted}));
+      const passed = result.score >= 70;
+      if (passed) await api(`/api/modules/${selectedModule.id}/complete`,postJson({}));
+      setQuizResult({message:`Your score: ${result.correctAnswers}/${result.totalQuestions} (${result.score}%). ${passed ? 'Module completed!' : 'Minimum 70% required. Try again.'}`,error:!passed});
+      updateProgress(previous => ({...previous, scores:{...previous.scores,[selectedIndex]:result.score},completedModules:passed ? [...new Set([...previous.completedModules,selectedIndex])] : previous.completedModules}));
+    } catch(error) { setQuizResult({message:error.message,error:true}); }
   }
 
-  function completeModule() {
-    updateProgress((previous) => ({
-      ...previous,
-      completedModules: [
-        ...new Set([
-          ...previous.completedModules,
-          selectedIndex,
-        ]),
-      ],
-    }));
-
-    setQuizResult({
-      message: "Module completed!",
-      error: false,
-    });
+  async function completeModule() {
+    try {
+      await api(`/api/modules/${selectedModule.id}/complete`,postJson({}));
+      updateProgress(previous => ({...previous,completedModules:[...new Set([...previous.completedModules,selectedIndex])]}));
+      setQuizResult({message:'Module completed!',error:false});
+    } catch(error) { setQuizResult({message:error.message,error:true}); }
   }
 
   if (!course || !isAssigned) {

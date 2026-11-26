@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useUsers } from "../context/UserContext";
-import { useCourses } from "../context/CourseContext";
+import { useAppDispatch } from "../store/hooks";
+import { addCourse } from "../store/slices/coursesSlice";
 import ModuleBuilder from "../components/ModuleBuilder";
 import QuizBuilder from "../components/QuizzBuilder";
 import "./AdminCourses.css";
@@ -42,7 +43,7 @@ function StaffCreateCourse() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const { users } = useUsers();
-  const { addCourse } = useCourses();
+  const dispatch = useAppDispatch();
 
   const staffId = String(currentUser?.id ?? "");
   const draftKey = `skillhub_staff_course_draft_${staffId}`;
@@ -51,14 +52,10 @@ function StaffCreateCourse() {
     (user) => String(user.id) === staffId
   );
 
-  const permissions = staff?.permissions || [];
-
-  const canCreate =
-    (staff?.role || "").toLowerCase() === "staff" &&
-    (staff?.status || "Active").toLowerCase() === "active" &&
-    (Array.isArray(permissions)
-      ? permissions.includes("Create Course")
-      : permissions.createCourse === true);
+  // The server authorizes staff course creation by role; fine-grained
+  // permissions are not stored by the backend yet.
+  const isActiveStaff = currentUser?.role === "staff";
+  const canCreate = isActiveStaff;
 
   const [savedDraft] = useState(() => loadDraft(draftKey));
 
@@ -282,7 +279,7 @@ function StaffCreateCourse() {
     setStep(4);
   }
 
-  function handlePublish() {
+  async function handlePublish() {
     if (!canCreate) {
       alert("You do not have permission to create courses.");
       return;
@@ -323,7 +320,7 @@ function StaffCreateCourse() {
     };
 
     try {
-      addCourse(newCourse);
+      await dispatch(addCourse(newCourse)).unwrap();
 
       localStorage.removeItem(draftKey);
 

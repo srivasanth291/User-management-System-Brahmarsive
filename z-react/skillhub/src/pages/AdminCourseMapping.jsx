@@ -1,13 +1,13 @@
 
 import { useState } from "react";
 import { useUsers } from "../context/UserContext";
-import { useCourses } from "../context/CourseContext";
+import { useAppSelector } from "../store/hooks";
 import { useCourseMappings } from "../context/CourseMappingContext";
 import "./AdminCourseMapping.css";
 
 function AdminCourseMapping() {
   const { users } = useUsers();
-  const { courses } = useCourses();
+  const courses = useAppSelector((state) => state.courses.items);
   const { mappings, assignCourse, unassignCourse } = useCourseMappings();
 
   const [studentId, setStudentId] = useState("");
@@ -59,7 +59,7 @@ function AdminCourseMapping() {
     return matchesSearch && matchesCourse;
   });
 
-  function handleAssign(event) {
+  async function handleAssign(event) {
     event.preventDefault();
 
     if (!studentId || !courseId) {
@@ -70,7 +70,7 @@ function AdminCourseMapping() {
       return;
     }
 
-    const result = assignCourse(studentId, courseId);
+    const result = await assignCourse(studentId, courseId);
 
     setMessage({
       type: result.ok ? "success" : "error",
@@ -83,18 +83,18 @@ function AdminCourseMapping() {
     }
   }
 
-  function handleUnassign(mapping) {
+  async function handleUnassign(mapping) {
     const confirmed = window.confirm(
       `Unassign "${mapping.course.title}" from "${mapping.student.name}"?`
     );
 
     if (!confirmed) return;
 
-    unassignCourse(mapping.id);
+    const result = await unassignCourse(mapping.id);
 
     setMessage({
-      type: "success",
-      text: "Course unassigned successfully.",
+      type: result.ok ? "success" : "error",
+      text: result.message,
     });
   }
 

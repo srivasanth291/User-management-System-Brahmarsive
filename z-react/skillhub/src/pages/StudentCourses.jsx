@@ -1,15 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useCourses } from "../context/CourseContext";
+import { useAppSelector } from "../store/hooks";
 import { useCourseMappings } from "../context/CourseMappingContext";
-import { getStudentProgress } from "../utils/studentProgress";
+import { getStudentProgress, refreshStudentProgress } from "../utils/studentProgress";
 import "./AdminCourses.css";
 import "./StudentCourses.css";
 
 function StudentCourses() {
   const { currentUser } = useAuth();
-  const { courses } = useCourses();
+  const courses = useAppSelector((state) => state.courses.items);
   const { mappings } = useCourseMappings();
   const navigate = useNavigate();
 
@@ -26,6 +26,14 @@ function StudentCourses() {
   const myCourses = courses.filter((course) =>
     assignedIds.has(String(course.id)),
   );
+
+  const [, refresh] = useState(0);
+  const assignedKey = myCourses.map(c => c.id).join(",");
+  useEffect(() => {
+    let active = true;
+    refreshStudentProgress(myCourses).then(() => { if(active) refresh(v=>v+1); });
+    return () => { active = false; };
+  }, [assignedKey]);
 
   const filteredCourses = myCourses.filter((course) =>
     course.title.toLowerCase().includes(search.toLowerCase()),

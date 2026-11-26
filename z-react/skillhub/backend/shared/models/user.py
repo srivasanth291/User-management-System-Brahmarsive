@@ -1,6 +1,6 @@
 
 from datetime import datetime, timezone
-
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy import (
     String,
     Boolean,
@@ -62,6 +62,12 @@ class User(Base):
         Boolean,
         default=True,
         nullable=False
+    )
+    permissions: Mapped[list[str]] = mapped_column(
+        JSONB,
+        nullable=False,
+        default=list,
+        server_default="[]"
     )
 
     created_at: Mapped[datetime] = mapped_column(

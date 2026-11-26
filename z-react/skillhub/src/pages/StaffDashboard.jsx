@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useCourses } from "../context/CourseContext";
+import { useAppSelector } from "../store/hooks";
 import { useCourseMappings } from "../context/CourseMappingContext";
 import "./StaffDashboard.css";
 
 function StaffDashboard() {
   const { currentUser } = useAuth();
-  const { courses } = useCourses();
+  const courses = useAppSelector((state) => state.courses.items);
   const { mappings } = useCourseMappings();
 
   const staffId = String(currentUser?.id ?? "");

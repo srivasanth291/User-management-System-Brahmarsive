@@ -1,16 +1,18 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useCourses } from "../context/CourseContext";
+import { useAppSelector } from "../store/hooks";
 import { useCourseMappings } from "../context/CourseMappingContext";
 import "./AdminDashoard.css";
 import "./StudentDashboard.css";
 import {
   getStudentProgress,
   getOverallProgress,
+  refreshStudentProgress,
 } from "../utils/studentProgress";
 function StudentDashboard() {
   const { currentUser } = useAuth();
-  const { courses } = useCourses();
+  const courses = useAppSelector((state) => state.courses.items);
   const { mappings } = useCourseMappings();
   const navigate = useNavigate();
 
@@ -25,6 +27,14 @@ function StudentDashboard() {
   const assignedCourses = courses.filter((course) =>
     assignedCourseIds.has(String(course.id)),
   );
+
+  const [, refresh] = useState(0);
+  const assignedKey = assignedCourses.map(c => c.id).join(",");
+  useEffect(() => {
+    let active = true;
+    refreshStudentProgress(assignedCourses).then(() => { if(active) refresh(v=>v+1); });
+    return () => { active = false; };
+  }, [assignedKey]);
 
   const totalCourses = assignedCourses.length;
 

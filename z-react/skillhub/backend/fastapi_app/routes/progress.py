@@ -15,7 +15,9 @@ from shared.models.progress import (
     Enrollment, ModuleProgress, QuizAttempt
 )
 from fastapi_app.dependencies import (
-    get_current_user, require_roles
+    get_current_user,
+    require_roles,
+    check_permission,
 )
 
 router = APIRouter(
@@ -43,18 +45,26 @@ def get_course(db, course_id):
     return course
 
 
-def check_manager(course, user):
+def check_manager(course, user, permission):
     if user.role.value == "admin":
         return
 
+    if user.role.value != "staff":
+        raise HTTPException(
+            status_code=403,
+            detail="Staff or admin access required"
+        )
+
+    check_permission(user, permission)
+
     if (
-        user.role.value == "staff"
-        and course.created_by == user.id
+        course.created_by != user.id
+        and course.instructor_id != user.id
     ):
-        return
-
-    raise HTTPException(403, "Permission denied")
-
+        raise HTTPException(
+            status_code=403,
+            detail="You cannot manage this course"
+        )
 
 def require_enrollment(db, student_id, course_id):
     enrollment = db.scalar(
@@ -105,7 +115,12 @@ def enroll_student(
     )
 ):
     course = get_course(db, course_id)
-    check_manager(course, user)
+    check_manager(course, user, "assign_course")
+    if course.status != "published":
+        raise HTTPException(
+            status_code=409,
+            detail="Publish the course before enrolling students"
+        )
 
     student = db.get(User, data.studentId)
 
@@ -163,7 +178,7 @@ def list_enrollments(
     )
 ):
     course = get_course(db, course_id)
-    check_manager(course, user)
+    check_manager(course, user, "view_students")
 
     rows = db.execute(
         select(Enrollment, User)
@@ -199,7 +214,7 @@ def remove_enrollment(
     )
 ):
     course = get_course(db, course_id)
-    check_manager(course, user)
+    check_manager(course, user, "unassign_course")
 
     enrollment = db.scalar(
         select(Enrollment).where(

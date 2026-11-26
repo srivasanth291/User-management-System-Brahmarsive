@@ -1,6 +1,5 @@
-
+from collections.abc import Callable
 import jwt
-
 from fastapi import Depends, HTTPException, status
 from fastapi.security import (
     HTTPBearer,
@@ -54,8 +53,6 @@ def get_current_user(
     return user
 
 
-from collections.abc import Callable
-
 
 def require_roles(
     *allowed_roles: str
@@ -74,3 +71,43 @@ def require_roles(
         return user
 
     return check_role
+
+STAFF_PERMISSIONS = frozenset({
+    "create_course",
+    "edit_course",
+    "publish_course",
+    "manage_modules",
+    "view_students",
+    "add_student",
+    "assign_course",
+    "unassign_course",
+    "view_progress",
+})
+
+
+def has_permission(user: User, permission: str) -> bool:
+    if user.role.value == "admin":
+        return True
+
+    if user.role.value != "staff":
+        return False
+
+    return permission in (user.permissions or [])
+
+
+def check_permission(user: User, permission: str) -> None:
+    if not has_permission(user, permission):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"Permission required: {permission}"
+        )
+
+
+def require_permission(permission: str):
+    def dependency(
+        user: User = Depends(get_current_user)
+    ) -> User:
+        check_permission(user, permission)
+        return user
+
+    return dependency

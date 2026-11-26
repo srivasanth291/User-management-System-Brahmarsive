@@ -1,80 +1,32 @@
-import { createContext, useContext, useState } from "react";
-import { courses as initialCourses } from "../data/courses";
-
+import { createContext, useContext, useEffect, useState } from "react";
+import { api, postJson } from "../api/client";
+import { useAuth } from "./AuthContext";
 const CourseContext = createContext(null);
-
 export function CourseProvider({ children }) {
-  const [courses, setCourses] = useState(() => {
-    try {
-      const savedCourses = localStorage.getItem("skillhub_courses");
-
-      return savedCourses ? JSON.parse(savedCourses) : initialCourses;
-    } catch {
-      return initialCourses;
-    }
-  });
-
-  function addCourse(course) {
-    const newCourse = {
-      ...course,
-      id: crypto.randomUUID(),
-    };
-
-    setCourses((previous) => {
-      const updatedCourses = [...previous, newCourse];
-
-      localStorage.setItem("skillhub_courses", JSON.stringify(updatedCourses));
-
-      return updatedCourses;
-    });
-
-    return newCourse;
+  const { currentUser } = useAuth();
+  const [courses, setCourses] = useState([]);
+  useEffect(() => {
+    if (!currentUser) { setCourses([]); return; }
+    api("/api/courses").then(data => setCourses(data.courses || [])).catch(console.error);
+  }, [currentUser?.id]);
+  async function addCourse(course) {
+    const result = await api("/api/courses", postJson(course));
+    setCourses(previous => [result.course, ...previous]);
+    return result.course;
   }
-  function updateCourse(courseId, updatedData) {
-    setCourses((previous) =>
-      previous.map((course) =>
-        String(course.id) === String(courseId)
-          ? { ...course, ...updatedData, id: course.id }
-          : course,
-      ),
-      
-    );
-    useEffect(() => {
-  localStorage.setItem(
-    "skillhub_courses",
-    JSON.stringify(courses)
-  );
-}, [courses]);
-
+  async function updateCourse(courseId, changes) {
+    const result = await api(`/api/courses/${courseId}`, { method: "PATCH", body: JSON.stringify(changes) });
+    setCourses(previous => previous.map(course => String(course.id) === String(courseId) ? result.course : course));
+    return result.course;
   }
-
-  function deleteCourse(courseId) {
-    setCourses((previous) =>
-      previous.filter((course) => String(course.id) !== String(courseId)),
-    );
-    useEffect(() => {
-  localStorage.setItem(
-    "skillhub_courses",
-    JSON.stringify(courses)
-  );
-}, [courses]);
+  async function deleteCourse(courseId) {
+    await api(`/api/courses/${courseId}`, { method: "DELETE" });
+    setCourses(previous => previous.filter(course => String(course.id) !== String(courseId)));
   }
-
-  return (
-    <CourseContext.Provider
-      value={{ courses, addCourse, updateCourse, deleteCourse }}
-    >
-      {children}
-    </CourseContext.Provider>
-  );
+  return <CourseContext.Provider value={{ courses, addCourse, updateCourse, deleteCourse }}>{children}</CourseContext.Provider>;
 }
-
 export function useCourses() {
-  const context = useContext(CourseContext);
-
-  if (!context) {
-    throw new Error("useCourses must be used inside CourseProvider");
-  }
-
-  return context;
+  const value = useContext(CourseContext);
+  if (!value) throw new Error("useCourses must be used inside CourseProvider");
+  return value;
 }

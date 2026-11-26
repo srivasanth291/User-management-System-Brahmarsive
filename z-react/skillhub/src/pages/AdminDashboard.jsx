@@ -1,6 +1,6 @@
 import { useAuth } from "../context/AuthContext";
 import { useUsers } from "../context/UserContext";
-import { useCourses } from "../context/CourseContext";
+import { useAppSelector } from "../store/hooks";
 import { useNavigate } from "react-router-dom";
 import "./AdminDashoard.css";
 import createCourseImage from "../images/create-course.jpg";
@@ -8,9 +8,11 @@ import viewCoursesImage from "../images/view-course.jpg";
 
 function AdminDashboard() {
   const { currentUser } = useAuth();
-  const { courses } = useCourses();
+
   const { users } = useUsers();
   const navigate = useNavigate();
+
+  const courses = useAppSelector((state) => state.courses.items);
 
   const registeredUsers = users.filter((user) => {
     const role = (user.role || "").toLowerCase();

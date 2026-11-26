@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useUsers } from "../context/UserContext";
+
 import "./Login.css";
 
 function Login() {
@@ -11,73 +11,22 @@ function Login() {
 
   const navigate = useNavigate();
 
-  const { setCurrentUser } = useAuth();
-  const { users } = useUsers();
+  const { login } = useAuth();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  function handleLogin(e) {
+  async function handleLogin(e) {
     e.preventDefault();
-
-    const enteredEmail = email.trim().toLowerCase();
-
-    if (enteredEmail === "") {
-      alert("Please enter your email");
-      return;
+    setError("");
+    setLoading(true);
+    try {
+      const user = await login(email.trim().toLowerCase(), password);
+      navigate(`/${user.role.toLowerCase()}/dashboard`, { replace: true });
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-
-    if (!enteredEmail.includes("@")) {
-      alert("Please enter a valid email");
-      return;
-    }
-
-    if (password === "") {
-      alert("Please enter your password");
-      return;
-    }
-
-
-    const user = users.find(
-      (u) =>
-        u.email.toLowerCase() === enteredEmail &&
-        u.password === password
-    );
-
-    if (!user) {
-      alert("Invalid email or password");
-      return;
-    }
-
-    const status = user.status || "Active";
-
-    if (status === "Pending") {
-      alert(
-        "Your invitation is pending. Please accept the invitation and set your password."
-      );
-      return;
-    }
-
-    if (status === "Deactivated") {
-      alert(
-        "Your account has been deactivated. Please contact the administrator."
-      );
-      return;
-    }
-
-    if (status !== "Active") {
-      alert("Your account is not active.");
-      return;
-    }
-
-    const {
-      password: _password,
-      inviteToken: _inviteToken,
-      ...safeUser
-    } = user;
-
-    setCurrentUser(safeUser);
-
-    navigate(`/${user.role.toLowerCase()}/dashboard`, {
-      replace: true,
-    });
   }
 
   return (
@@ -109,7 +58,8 @@ function Login() {
           required
         />
 
-        <button type="submit">Login</button>
+        {error && <p role="alert" style={{ color: "#dc2626" }}>{error}</p>}
+        <button type="submit" disabled={loading}>{loading ? "Signing in..." : "Login"}</button>
       </form>
     </div>
   );

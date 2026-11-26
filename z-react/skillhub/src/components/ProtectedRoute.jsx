@@ -2,7 +2,9 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 function ProtectedRoute({ allowedRole, children }) {
-  const { currentUser } = useAuth();
+  const { currentUser, checking } = useAuth();
+
+  if (checking) return <p>Checking your session...</p>;
 
   if (!currentUser) {
     return <Navigate to="/login" replace />;

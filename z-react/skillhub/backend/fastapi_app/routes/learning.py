@@ -12,6 +12,7 @@ from shared.models.learning import (
     Module, QuizQuestion, QuizOption
 )
 from shared.models.user import User
+from shared.models.progress import Enrollment
 from fastapi_app.dependencies import (
     get_current_user, require_roles
 )
@@ -73,16 +74,39 @@ def get_course_or_404(db, course_id):
     return course
 
 
-def check_read(course, user):
-    if user.role.value == "admin":
-        return
-    if user.role.value == "staff":
-        if course.created_by == user.id:
-            return
-    elif course.status == "published":
-        return
-    raise HTTPException(403, "Permission denied")
+def check_read(course, user, db):
+    role = user.role.value
 
+    if role == "admin":
+        return
+
+    if role == "staff":
+        if (
+            course.created_by == user.id
+            or course.instructor_id == user.id
+        ):
+            return
+
+        raise HTTPException(
+            status_code=403,
+            detail="You do not have access to this course"
+        )
+
+    if role == "student" and course.status == "published":
+        enrolled = db.scalar(
+            select(Enrollment.id).where(
+                Enrollment.course_id == course.id,
+                Enrollment.student_id == user.id
+            )
+        )
+
+        if enrolled is not None:
+            return
+
+    raise HTTPException(
+        status_code=403,
+        detail="Permission denied"
+    )
 
 def save_questions(db, module_id, questions):
     for q_index, question in enumerate(
@@ -217,7 +241,7 @@ def list_modules(
     user: User = Depends(get_current_user)
 ):
     course = get_course_or_404(db, course_id)
-    check_read(course, user)
+    check_read(course, user, db)
 
     modules = db.scalars(
         select(Module)

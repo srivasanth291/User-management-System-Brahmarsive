@@ -2,14 +2,14 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useUsers } from "../context/UserContext";
-import { useCourses } from "../context/CourseContext";
+import { useAppSelector } from "../store/hooks";
 import { useCourseMappings } from "../context/CourseMappingContext";
 import "./StaffStudents.css";
 
 function StaffStudents() {
   const { currentUser } = useAuth();
   const { users, inviteUser } = useUsers();
-  const { courses } = useCourses();
+  const courses = useAppSelector((state) => state.courses.items);
   const { mappings } = useCourseMappings();
 
   const [search, setSearch] = useState("");
